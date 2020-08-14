@@ -20,7 +20,7 @@ public class ReceiptService {
 
     public Response saveReceipt(Receipt receipt) {
         if (!isValid(receipt)) {
-            return new Response(false, validateProperty(receipt).toString());
+            return new Response(false, validate(receipt).toString());
         }
         receipt.setCreatedDate(new Date());
         receipt.getProductDetail().calculateTotalPrice();
@@ -34,13 +34,13 @@ public class ReceiptService {
         if (savedReceipt == null) {
             return new Response(false, "Receipt could not be saved");
         }
-        return new Response(true, "Receipt was stored successfully");
+        return new Response(true, "Receipt was stored successfully!");
     }
 
     public Response getReceipt() {
         Receipt receipt = (Receipt) JsonFileSerializer.read(filePath, Receipt.class);
         if (receipt == null) {
-            return new Response(false, "Receipt not found");
+            return new Response(false, "Receipt not found!");
         }
         PaymentDetail paymentDetail = receipt.getPaymentDetail();
         String cardNumber = paymentDetail.getCreditCardNumber();
@@ -51,27 +51,15 @@ public class ReceiptService {
         return new Response(true, receipt.toString());
     }
 
-    public Set<ConstraintViolation<Client>> validateProperty(Client obj, String propertyName) {
-        return validator.validateProperty(obj, propertyName);
-    }
-
-    public Set<ConstraintViolation<CI>> validateProperty(CI obj, String propertyName) {
-        return validator.validateProperty(obj, propertyName);
-    }
-
-    public Set<ConstraintViolation<PaymentDetail>> validateProperty(PaymentDetail obj, String propertyName) {
-        return validator.validateProperty(obj, propertyName);
-    }
-
-    public Set<ConstraintViolation<ProductDetail>> validateProperty(ProductDetail obj, String propertyName) {
-        return validator.validateProperty(obj, propertyName);
+    public Set<ConstraintViolation<Object>> validateValue(Class clazz, String propertyName, Object value) {
+        return validator.validateValue(clazz, propertyName, value);
     }
 
     private boolean isValid(Receipt receipt) {
         return validator.validate(receipt).isEmpty();
     }
 
-    public Set<ConstraintViolation<Receipt>> validateProperty(Receipt receipt) {
+    public Set<ConstraintViolation<Receipt>> validate(Receipt receipt) {
         return validator.validate(receipt);
     }
 }
