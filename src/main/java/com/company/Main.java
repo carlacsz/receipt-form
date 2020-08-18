@@ -1,5 +1,7 @@
 package com.company;
 
+import com.company.utils.JsonFileSerializer;
+
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -15,7 +17,7 @@ public class Main {
         LOGGER.setLevel(Level.OFF);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        ReceiptService service = new ReceiptService(validator);
+        ReceiptService service = new ReceiptService(new JsonFileSerializer(), validator);
         FormHandler handler = new FormHandler(service);
         handler.start();
     }

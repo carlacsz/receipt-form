@@ -2,6 +2,7 @@ package com.company;
 
 import com.company.components.*;
 import com.company.utils.Encryptor;
+import com.company.utils.FileSerializer;
 import com.company.utils.JsonFileSerializer;
 import com.company.utils.Response;
 
@@ -14,8 +15,10 @@ import java.util.Set;
 public class ReceiptService {
     public static final String filePath = "src/data/receipt.json";
     private final Validator validator;
+    private final FileSerializer serializer;
 
-    public ReceiptService(Validator validator) {
+    public ReceiptService(FileSerializer serializer, Validator validator) {
+        this.serializer = serializer;
         this.validator = validator;
     }
 
@@ -32,7 +35,7 @@ public class ReceiptService {
                 String encryptedCardNumber = Encryptor.encrypt(cardNumber);
                 paymentDetail.setCreditCardNumber(encryptedCardNumber);
             }
-            JsonFileSerializer.write(filePath, receipt);
+            serializer.write(filePath, receipt);
             return new Response(true, "Receipt was stored successfully!");
         } catch (IOException e) {
             return new Response(false,
@@ -45,7 +48,7 @@ public class ReceiptService {
 
     public Response getReceipt() {
         try {
-            Receipt receipt = JsonFileSerializer.read(filePath, Receipt.class);
+            Receipt receipt = serializer.read(filePath, Receipt.class);
             PaymentDetail paymentDetail = receipt.getPaymentDetail();
             String cardNumber = paymentDetail.getCreditCardNumber();
             if (cardNumber != null) {

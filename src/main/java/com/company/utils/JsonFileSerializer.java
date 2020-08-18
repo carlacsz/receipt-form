@@ -8,11 +8,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
 
-public class JsonFileSerializer {
+public class JsonFileSerializer implements FileSerializer{
     public static final Logger LOGGER = Logger.getLogger(JsonFileSerializer.class.getName());
     public static final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm a");
 
-    public static <T> T write(String filePath, T obj) throws IOException {
+    public <T> T write(String filePath, T obj) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(dateFormat);
         try {
@@ -26,7 +26,7 @@ public class JsonFileSerializer {
         }
     }
 
-    public static <T> T read(String filePath, Class clazz) throws IOException {
+    public <T> T read(String filePath, Class clazz) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(dateFormat);
         try {
