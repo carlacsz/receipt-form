@@ -1,5 +1,11 @@
 package com.company.dynamic.form.elements;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
 public abstract class FormElement<T> {
     private String name;
     private T value;
@@ -19,4 +25,13 @@ public abstract class FormElement<T> {
     public void setValue(T value) {
         this.value = value;
     }
+
+    public String showValueOptions() {
+        return "";
+    }
+
+    public List<String> validate(String str) {
+        return new ArrayList<>();
+    }
+
 }
