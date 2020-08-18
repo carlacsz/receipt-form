@@ -8,12 +8,14 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.logging.Logger;
 
 public class Encryptor {
+    public static final Logger LOGGER = Logger.getLogger(Encryptor.class.getName());
     private static final String secretKey = "boooooooooom!!!!";
     private static final String salt = "ssshhhhhhhhhhh!!!!";
 
-    public static String encrypt(String strToEncrypt) {
+    public static String encrypt(String strToEncrypt) throws Exception {
         try {
             byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             IvParameterSpec ivspec = new IvParameterSpec(iv);
@@ -27,12 +29,12 @@ public class Encryptor {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         } catch (Exception e) {
-            System.out.println("Error while encrypting: " + e.toString());
+            LOGGER.warning("Error while encrypting: " + e.toString());
+            throw e;
         }
-        return null;
     }
 
-    public static String decrypt(String strToDecrypt) {
+    public static String decrypt(String strToDecrypt) throws Exception {
         try {
             byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             IvParameterSpec ivspec = new IvParameterSpec(iv);
@@ -46,8 +48,8 @@ public class Encryptor {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } catch (Exception e) {
-            System.out.println("Error while decrypting: " + e.toString());
+            LOGGER.warning("Error while decrypting: " + e.toString());
+            throw e;
         }
-        return null;
     }
 }

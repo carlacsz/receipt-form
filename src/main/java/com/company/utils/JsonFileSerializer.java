@@ -6,32 +6,36 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.logging.Logger;
 
 public class JsonFileSerializer {
+    public static final Logger LOGGER = Logger.getLogger(JsonFileSerializer.class.getName());
     public static final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm a");
 
-    public static Object write(String filePath, Object obj) {
+    public static <T> T write(String filePath, T obj) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(dateFormat);
-        Object saved = null;
         try {
             objectMapper.writeValue(new File(filePath), obj);
-            saved = obj;
+            return obj;
         } catch (IOException e) {
-//            System.out.println(e.toString());
+            LOGGER.warning(String.format("Could not serialize object with type \"%s\" as json to file \"%s\"",
+                    obj.getClass(), filePath));
+            LOGGER.warning(e.toString());
+            throw e;
         }
-        return saved;
     }
 
-    public static Object read(String filePath, Class clazz) {
+    public static <T> T read(String filePath, Class clazz) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(dateFormat);
-        Object obj = null;
         try {
-            obj = objectMapper.readValue(new File(filePath), clazz);
+            return  (T) objectMapper.readValue(new File(filePath), clazz);
         } catch (IOException e) {
-//            System.out.println(e.toString());
+            LOGGER.warning(String.format("Could not deserialize object from file \"%s\" and given class \"%s\"",
+                    filePath, clazz));
+            LOGGER.warning(e.toString());
+            throw e;
         }
-        return obj;
     }
 }

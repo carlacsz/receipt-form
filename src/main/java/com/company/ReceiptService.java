@@ -7,6 +7,7 @@ import com.company.utils.Response;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Set;
 
@@ -26,29 +27,39 @@ public class ReceiptService {
         receipt.getProductDetail().calculateTotalPrice();
         PaymentDetail paymentDetail = receipt.getPaymentDetail();
         String cardNumber = paymentDetail.getCreditCardNumber();
-        if (cardNumber != null) {
-            String encryptedCardNumber = Encryptor.encrypt(cardNumber);
-            paymentDetail.setCreditCardNumber(encryptedCardNumber);
+        try {
+            if (cardNumber != null) {
+                String encryptedCardNumber = Encryptor.encrypt(cardNumber);
+                paymentDetail.setCreditCardNumber(encryptedCardNumber);
+            }
+            JsonFileSerializer.write(filePath, receipt);
+            return new Response(true, "Receipt was stored successfully!");
+        } catch (IOException e) {
+            return new Response(false,
+                    "Receipt could not be saved. Serialization failed!\n" + e.getMessage());
+        } catch (Exception e) {
+            return new Response(false,
+                    "Receipt could not be saved. Encryption failed!");
         }
-        Receipt savedReceipt = (Receipt) JsonFileSerializer.write(filePath, receipt);
-        if (savedReceipt == null) {
-            return new Response(false, "Receipt could not be saved");
-        }
-        return new Response(true, "Receipt was stored successfully!");
     }
 
     public Response getReceipt() {
-        Receipt receipt = (Receipt) JsonFileSerializer.read(filePath, Receipt.class);
-        if (receipt == null) {
-            return new Response(false, "Receipt not found!");
+        try {
+            Receipt receipt = JsonFileSerializer.read(filePath, Receipt.class);
+            PaymentDetail paymentDetail = receipt.getPaymentDetail();
+            String cardNumber = paymentDetail.getCreditCardNumber();
+            if (cardNumber != null) {
+                String decryptedCardNumber = Encryptor.decrypt(cardNumber);
+                paymentDetail.setCreditCardNumber(decryptedCardNumber);
+            }
+            return new Response(true, receipt.toString());
+        } catch (IOException e) {
+            return new Response(false,
+                    "Receipt could not be loaded. Deserialization failed!\n" + e.getMessage());
+        } catch (Exception e) {
+            return new Response(false,
+                    "Receipt could not be loaded. Decryption failed!");
         }
-        PaymentDetail paymentDetail = receipt.getPaymentDetail();
-        String cardNumber = paymentDetail.getCreditCardNumber();
-        if (cardNumber != null) {
-            String decryptedCardNumber = Encryptor.decrypt(cardNumber);
-            paymentDetail.setCreditCardNumber(decryptedCardNumber);
-        }
-        return new Response(true, receipt.toString());
     }
 
     public Set<ConstraintViolation<Object>> validateValue(Class clazz, String propertyName, Object value) {

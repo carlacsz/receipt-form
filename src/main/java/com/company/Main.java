@@ -8,9 +8,11 @@ import java.util.logging.Logger;
 
 public class Main {
     public static final Logger H_LOGGER = Logger.getLogger("org.hibernate");
+    public static final Logger LOGGER = Logger.getLogger("com.company");
 
     public static void main(String[] args) {
         H_LOGGER.setLevel(Level.OFF);
+        LOGGER.setLevel(Level.OFF);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         ReceiptService service = new ReceiptService(validator);
