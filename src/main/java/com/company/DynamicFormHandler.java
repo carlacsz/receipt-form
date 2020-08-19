@@ -3,13 +3,13 @@ package com.company;
 import com.company.dynamic.form.DynamicForm;
 import com.company.dynamic.form.elements.*;
 import com.company.utils.FileSerializer;
+import com.company.utils.InputReader;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
 
 public class DynamicFormHandler {
-    private final Scanner scanner = new Scanner(System.in);
+
     private final FileSerializer serializer;
 
     public DynamicFormHandler(FileSerializer serializer) {
@@ -18,17 +18,25 @@ public class DynamicFormHandler {
 
     public void start() {
         while (true) {
-            System.out.printf("Choose an option%n" +
-                    "1) Create New Form Template%n2) Fill form from Template%n3) Exit%nOption number: ");
-            String option = readLine();
+            System.out.print("Choose an option\n" +
+                    "1) Create new form template    2) Fill form from Template\n" +
+                    "3) Print filled form           4) Exit\nOption number: ");
+            String option = InputReader.readLine();
             switch (option) {
                 case "1":
-                    createDynamicForm();
+                    DynamicForm form = createTemplateForm();
+                    saveForm(form, "Template");
                     break;
                 case "2":
-                    fillFormFromTemplate();
+                    DynamicForm templateForm = getForm("Template");
+                    if (templateForm != null) {
+                        fillFormFromTemplate(templateForm);
+                    }
                     break;
                 case "3":
+                    printFilledForm();
+                    break;
+                case "4":
                     return;
                 default:
                     System.out.println("Invalid option");
@@ -37,21 +45,44 @@ public class DynamicFormHandler {
         }
     }
 
-    private void fillFormFromTemplate() {
-        System.out.println("Enter file path where the dynamic form is saved");
-        String templateFormPath = readLine();
+    private DynamicForm getForm(String formType) {
+        System.out.printf("Enter file path where the %s form is saved%nPath: ", formType);
+        String filePath = InputReader.readLine();
         try {
-            DynamicForm templateForm = serializer.read(templateFormPath, DynamicForm.class);
-            System.out.println("Form Template \"" + templateForm.getName() + "\" was loaded");
-            fillTemplateForm(templateForm);
+            DynamicForm form = serializer.read(filePath, DynamicForm.class);
+            System.out.printf("%s form \"%s\" was successfully loaded from file \"%s\"\n",
+                    formType, form.getName(), filePath);
+            return form;
         } catch (IOException e) {
-            System.out.println("Form could not be loaded. Deserialization failed!\n" + e.getMessage());
+            System.out.printf("%s form could not be loaded. Deserialization failed!\n%s",
+                    formType, e.getMessage());
+            return null;
         }
     }
 
-    private void fillTemplateForm(DynamicForm templateForm) {
-        System.out.println("Enter file path where the filled form will be saved");
-        String filledFormPath = readLine();
+    private void saveForm(DynamicForm form, String formType) {
+        System.out.printf("Enter file path where the %s form will be saved%nPath: ", formType);
+        String filePath = InputReader.readLine();
+        try {
+            serializer.write(filePath, form);
+            System.out.printf("%s form was stored successfully in file \"%s\"\n", formType, filePath);
+        } catch (IOException e) {
+            System.out.printf("%s form could not be saved. Serialization failed!\n%s", formType, e.getMessage());
+        }
+    }
+
+    private void printFilledForm() {
+        DynamicForm filledForm = getForm("Filled");
+        if (filledForm != null) {
+            System.out.printf("----- %s -----%n", filledForm.getName());
+            for (FormElement element : filledForm.getFormElements()) {
+                System.out.println(element);
+            }
+            System.out.printf("----- %s -----%n", filledForm.getName());
+        }
+    }
+
+    private void fillFormFromTemplate(DynamicForm templateForm) {
         DynamicForm filledForm = new DynamicForm();
         filledForm.setName(templateForm.getName());
         int filledField = 0;
@@ -60,7 +91,7 @@ public class DynamicFormHandler {
             FormElement fieldTemplate = formElements.get(filledField);
             System.out.println("Enter value for: " + fieldTemplate.getName());
             System.out.print(fieldTemplate.showValueOptions());
-            String line = readLine();
+            String line = InputReader.readLine();
             if (fieldTemplate.validate(line).size() == 0) {
                 fieldTemplate.setValue(line);
                 filledForm.addFormElement(fieldTemplate);
@@ -69,12 +100,7 @@ public class DynamicFormHandler {
                 printViolations(fieldTemplate.validate(line));
             }
         }
-        try {
-            serializer.write(filledFormPath, filledForm);
-            System.out.println("Filled form was stored successfully!");
-        } catch (IOException e) {
-            System.out.println("Filled form could not be saved. Serialization failed!\n" + e.getMessage());
-        }
+        saveForm(filledForm, "Filled");
     }
 
     private void printViolations(List<String> violations) {
@@ -83,28 +109,22 @@ public class DynamicFormHandler {
         }
     }
 
-    private void createDynamicForm() {
-        System.out.println("Enter file path where the dynamic form will be saved");
-        String filePath = readLine();
+    private DynamicForm createTemplateForm() {
         DynamicForm form = new DynamicForm();
-        System.out.println("Enter a name for the dynamic form");
-        form.setName(readLine());
+        System.out.print("Enter a name for the form: ");
+        form.setName(InputReader.readLine());
         addFormFieldsToTemplate(form);
-        try {
-            serializer.write(filePath, form);
-            System.out.println("Form Template was stored successfully in file" + filePath);
-        } catch (IOException e) {
-            System.out.println("Form could not be saved. Serialization failed!\n" + e.getMessage());
-        }
+        return form;
     }
 
     private void addFormFieldsToTemplate(DynamicForm form) {
         while (true) {
-            System.out.printf("Choose which field to add %n" +
-                    "1) Text%n2) Text Number%n3) Text Password%n" +
-                    "4) Date%n5) Checkbox%n6) Radio Button%n" +
-                    "7) Dropdown%n8) Button%n9) Exit%nOption number: ");
-            String option = readLine();
+            System.out.printf("Adding elements to form \"%s\"%n", form.getName());
+            System.out.printf("Choose an option (exit option will finish the adding)%n" +
+                    "1) Text      2) Text Number    3) Text Password%n" +
+                    "4) Date      5) Checkbox       6) Radio Button%n" +
+                    "7) Dropdown  8) Button         9) Exit%nOption number: ");
+            String option = InputReader.readLine();
             switch (option) {
                 case "1":
                     form.addFormElement(createText());
@@ -141,59 +161,71 @@ public class DynamicFormHandler {
 
     private Text createText() {
         Text text = new Text();
-        text.setName(readFieldName());
+        text.setName(InputReader.readLineFor("field name"));
+        if (wantsToAddValidation(text.getName())) {
+            text.setPatternStr(InputReader.readPatternFor(text.getName()));
+            text.setMin(InputReader.readIntFor("Min value"));
+            text.setMax(InputReader.readIntFor("Max value"));
+        }
         return text;
     }
 
     private TextNumber createTextNumber() {
         TextNumber textNumber = new TextNumber();
-        textNumber.setName(readFieldName());
+        textNumber.setName(InputReader.readLineFor("field name"));
+        if (wantsToAddValidation(textNumber.getName())) {
+            textNumber.setMin(InputReader.readIntFor("Min value"));
+            textNumber.setMax(InputReader.readIntFor("Max value"));
+        }
         return textNumber;
     }
 
     private TextPassword createTextPassword() {
         TextPassword textPassword = new TextPassword();
-        textPassword.setName(readFieldName());
+        textPassword.setName(InputReader.readLineFor("field name"));
+        if (wantsToAddValidation(textPassword.getName())) {
+            textPassword.setPatternStr(InputReader.readPatternFor(textPassword.getName()));
+            textPassword.setMin(InputReader.readIntFor("Min value"));
+            textPassword.setMax(InputReader.readIntFor("Max value"));
+        }
         return textPassword;
     }
 
     private DateField createDateField() {
         DateField dateField = new DateField();
-        dateField.setName(readFieldName());
+        dateField.setName(InputReader.readLineFor("field name"));
         return dateField;
     }
 
     private Checkbox createCheckbox() {
         Checkbox checkbox = new Checkbox();
-        checkbox.setName(readFieldName());
+        checkbox.setName(InputReader.readLineFor("field name"));
         return checkbox;
     }
 
     private RadioButton createRadioButton() {
         RadioButton radioButton = new RadioButton();
-        radioButton.setName(readFieldName());
+        radioButton.setName(InputReader.readLineFor("field name"));
+        radioButton.setOptions(InputReader.readMultipleLinesFor("Radio Button"));
         return radioButton;
     }
 
     private Dropdown createDropdown() {
         Dropdown dropdown = new Dropdown();
-        dropdown.setName(readFieldName());
+        dropdown.setName(InputReader.readLineFor("field name"));
+        dropdown.setOptions(InputReader.readMultipleLinesFor("Dropdown"));
         return dropdown;
     }
 
     private Button createButton() {
         Button button = new Button();
-        button.setName(readFieldName());
+        button.setName(InputReader.readLineFor("button name"));
         return button;
     }
 
-    private String readFieldName() {
-        System.out.println("Enter name for field");
-        return readLine();
-    }
-
-    private String readLine() {
-        return scanner.nextLine();
+    private boolean wantsToAddValidation(String fieldName) {
+        System.out.printf("Enter yes if you want to add validation for field \"%s\"\n", fieldName);
+        return "yes".equalsIgnoreCase(InputReader.readLine());
     }
 
 }

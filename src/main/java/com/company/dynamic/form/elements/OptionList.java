@@ -29,4 +29,20 @@ public abstract class OptionList extends FormElement<String> {
         }
         return valueOptions.toString();
     }
+
+    @Override
+    public List<String> validate(String str) {
+        List<String> violations = new ArrayList<>();
+        try {
+            options.get(Integer.parseInt(str) - 1);
+        } catch (NumberFormatException | IndexOutOfBoundsException e) {
+            violations.add("Not a valid option");
+        }
+        return violations;
+    }
+
+    @Override
+    public String toString() {
+        return getName() + ": " + options.get(Integer.parseInt(getValue()) - 1);
+    }
 }

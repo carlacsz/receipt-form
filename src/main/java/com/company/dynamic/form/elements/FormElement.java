@@ -34,4 +34,8 @@ public abstract class FormElement<T> {
         return new ArrayList<>();
     }
 
+    @Override
+    public String toString() {
+        return name + ": " + value;
+    }
 }
