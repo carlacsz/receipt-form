@@ -87,9 +87,10 @@ public class DynamicFormHandler {
         filledForm.setName(templateForm.getName());
         int filledField = 0;
         List<FormElement> formElements = templateForm.getFormElements();
+        System.out.println("--- Filling form \"" + templateForm.getName() + "\" ---");
         while (filledField < formElements.size()) {
             FormElement fieldTemplate = formElements.get(filledField);
-            System.out.println("Enter value for: " + fieldTemplate.getName());
+            System.out.print("Enter \"" + fieldTemplate.getName() + "\": ");
             System.out.print(fieldTemplate.showValueOptions());
             String line = InputReader.readLine();
             if (fieldTemplate.validate(line).size() == 0) {
@@ -148,7 +149,7 @@ public class DynamicFormHandler {
                     form.addFormElement(createDropdown());
                     break;
                 case "8":
-                    form.addFormElement(createButton());
+                    form.addFormElement(addSaveButton());
                     break;
                 case "9":
                     return;
@@ -161,7 +162,7 @@ public class DynamicFormHandler {
 
     private Text createText() {
         Text text = new Text();
-        text.setName(InputReader.readLineFor("field name"));
+        text.setName(InputReader.readLineFor("Text field name"));
         if (wantsToAddValidation(text.getName())) {
             text.setPatternStr(InputReader.readPatternFor(text.getName()));
             text.setMin(InputReader.readIntFor("Min value"));
@@ -172,7 +173,7 @@ public class DynamicFormHandler {
 
     private TextNumber createTextNumber() {
         TextNumber textNumber = new TextNumber();
-        textNumber.setName(InputReader.readLineFor("field name"));
+        textNumber.setName(InputReader.readLineFor("Text Number field name"));
         if (wantsToAddValidation(textNumber.getName())) {
             textNumber.setMin(InputReader.readIntFor("Min value"));
             textNumber.setMax(InputReader.readIntFor("Max value"));
@@ -182,7 +183,7 @@ public class DynamicFormHandler {
 
     private TextPassword createTextPassword() {
         TextPassword textPassword = new TextPassword();
-        textPassword.setName(InputReader.readLineFor("field name"));
+        textPassword.setName(InputReader.readLineFor("Text password field name"));
         if (wantsToAddValidation(textPassword.getName())) {
             textPassword.setPatternStr(InputReader.readPatternFor(textPassword.getName()));
             textPassword.setMin(InputReader.readIntFor("Min value"));
@@ -193,34 +194,44 @@ public class DynamicFormHandler {
 
     private DateField createDateField() {
         DateField dateField = new DateField();
-        dateField.setName(InputReader.readLineFor("field name"));
+        dateField.setName(InputReader.readLineFor("Date field name"));
         return dateField;
     }
 
     private Checkbox createCheckbox() {
         Checkbox checkbox = new Checkbox();
-        checkbox.setName(InputReader.readLineFor("field name"));
+        checkbox.setName(InputReader.readLineFor("Checkbox field name"));
         return checkbox;
     }
 
     private RadioButton createRadioButton() {
         RadioButton radioButton = new RadioButton();
-        radioButton.setName(InputReader.readLineFor("field name"));
-        radioButton.setOptions(InputReader.readMultipleLinesFor("Radio Button"));
+        radioButton.setName(InputReader.readLineFor("Radio button field name"));
+        while (radioButton.getOptions().size() == 0) {
+            radioButton.setOptions(InputReader.readMultipleLinesFor("Radio Button"));
+            if (radioButton.getOptions().size() == 0) {
+                System.out.println("Radio Button must have at least one option");
+            }
+        }
         return radioButton;
     }
 
     private Dropdown createDropdown() {
         Dropdown dropdown = new Dropdown();
-        dropdown.setName(InputReader.readLineFor("field name"));
-        dropdown.setOptions(InputReader.readMultipleLinesFor("Dropdown"));
+        dropdown.setName(InputReader.readLineFor("Dropdown field name"));
+        while (dropdown.getOptions().size() == 0) {
+            dropdown.setOptions(InputReader.readMultipleLinesFor("Dropdown"));
+            if (dropdown.getOptions().size() == 0) {
+                System.out.println("Dropdown must have at least one option");
+            }
+        }
         return dropdown;
     }
 
-    private Button createButton() {
-        Button button = new Button();
-        button.setName(InputReader.readLineFor("button name"));
-        return button;
+    private SaveButton addSaveButton() {
+        SaveButton saveButton = new SaveButton();
+        saveButton.setName(InputReader.readLineFor("Save button name"));
+        return saveButton;
     }
 
     private boolean wantsToAddValidation(String fieldName) {

@@ -5,12 +5,13 @@ public class RadioButton extends OptionList {
     public String showValueOptions() {
         StringBuilder valueOptions = new StringBuilder();
         int start = 1;
+        valueOptions.append('\n');
         for (String option : getOptions()) {
             valueOptions.append(start).append(") ")
                     .append(option).append(" ");
             start++;
         }
-        valueOptions.append('\n');
+        valueOptions.append("\nOption: ");
         return valueOptions.toString();
     }
 }

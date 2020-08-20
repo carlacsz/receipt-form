@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Text extends FormElement<String> {
+public class Text extends FormElement {
     private String patternStr;
     private Integer min;
     private Integer max;

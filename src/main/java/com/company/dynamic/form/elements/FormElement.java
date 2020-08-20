@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
-public abstract class FormElement<T> {
+@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, property = "@class")
+public abstract class FormElement {
     private String name;
-    private T value;
+    private String value;
 
     public String getName() {
         return name;
@@ -18,11 +18,11 @@ public abstract class FormElement<T> {
         this.name = name;
     }
 
-    public T getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(T value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
