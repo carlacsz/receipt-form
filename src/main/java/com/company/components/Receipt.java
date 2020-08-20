@@ -1,14 +1,13 @@
 package com.company.components;
 
-import com.company.utils.DateFormatter;
-
 import javax.validation.Valid;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Receipt {
-
+    public static final String DATE_FORMAT = "dd/MM/yyyy HH:mm a";
+    
     private Date createdDate;
 
     @Valid
@@ -54,8 +53,10 @@ public class Receipt {
 
     @Override
     public String toString() {
+        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        String dateFormatted =  dateFormat.format(createdDate);
         return "Receipt\n" +
-                "   Create Date        " + DateFormatter.format(createdDate, "dd/MM/yyyy HH:mm a") + '\n' +
+                "   Create Date        " + dateFormatted + '\n' +
                 "   Buyer Details\n" + client + paymentDetail +
                 "   Product Details\n" + productDetail;
     }

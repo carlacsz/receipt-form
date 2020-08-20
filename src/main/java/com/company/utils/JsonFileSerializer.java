@@ -4,17 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
 
 public class JsonFileSerializer implements FileSerializer{
     public static final Logger LOGGER = Logger.getLogger(JsonFileSerializer.class.getName());
-    public static final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm a");
+    public static final String DATE_FORMAT = "dd/MM/yyyy HH:mm a";
 
     public <T> T write(String filePath, T obj) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(dateFormat);
+        objectMapper.setDateFormat(new SimpleDateFormat(DATE_FORMAT));
         try {
             objectMapper.writeValue(new File(filePath), obj);
             return obj;
@@ -28,7 +27,7 @@ public class JsonFileSerializer implements FileSerializer{
 
     public <T> T read(String filePath, Class clazz) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(dateFormat);
+        objectMapper.setDateFormat(new SimpleDateFormat(DATE_FORMAT));
         try {
             return  (T) objectMapper.readValue(new File(filePath), clazz);
         } catch (IOException e) {
