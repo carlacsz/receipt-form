@@ -7,6 +7,7 @@ import java.util.List;
 
 public class DynamicForm {
     private String name = "";
+    private boolean filled = false;
     private List<FormElement> formElements = new ArrayList<>();
 
     public String getName() {
@@ -15,6 +16,14 @@ public class DynamicForm {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isFilled() {
+        return filled;
+    }
+
+    public void setFilled(boolean filled) {
+        this.filled = filled;
     }
 
     public List<FormElement> getFormElements() {

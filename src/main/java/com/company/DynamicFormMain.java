@@ -1,7 +1,5 @@
 package com.company;
 
-import com.company.utils.JsonFileSerializer;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,7 +11,7 @@ public class DynamicFormMain {
         H_LOGGER.setLevel(Level.OFF);
         LOG.setLevel(Level.WARNING);
 
-        DynamicFormHandler handler = new DynamicFormHandler(new JsonFileSerializer());
+        DynamicFormHandler handler = new DynamicFormHandler();
         handler.start();
 
     }

@@ -57,4 +57,14 @@ public class InputReader {
         return stringList;
     }
 
+    public static boolean wantsToAddValueFor(String description) {
+        System.out.printf("Do to want to add %s? %nYes/No: ", description);
+        while (true){
+            String answer = readLine();
+            if("yes".equalsIgnoreCase(answer)) return true;
+            if ("no".equalsIgnoreCase(answer)) return false;
+            System.out.print("Enter Yes/No: ");
+        }
+    }
+    
 }
