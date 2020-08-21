@@ -6,8 +6,10 @@ import com.company.dynamic.form.elements.*;
 import com.company.utils.FileSerializer;
 import com.company.utils.InputReader;
 import com.company.utils.JsonFileSerializer;
+import com.company.utils.SimpleMd5;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class DynamicFormHandler {
@@ -16,8 +18,8 @@ public class DynamicFormHandler {
         while (true) {
             System.out.print("Choose an option\n" +
                     "1) Create new form template    2) Fill form from Template\n" +
-                    "3) Print filled form           4) Exit\nOption number: ");
-            String option = InputReader.readLine();
+                    "3) Print filled form           Exit\nOption: ");
+            String option = InputReader.readLine().toLowerCase();
             switch (option) {
                 case "1":
                     DynamicForm form = createTemplateForm();
@@ -28,13 +30,18 @@ public class DynamicFormHandler {
                     if (templateForm != null) {
                         DynamicForm filledForm = fillFormFromTemplate(templateForm);
                         filledForm.setFilled(true);
-                        saveForm(filledForm, "Filled");
+                        try {
+                            SecurePasswordFields(filledForm);
+                            saveForm(filledForm, "Filled");
+                        } catch (NoSuchAlgorithmException e) {
+                            System.out.println("Cant process securing passwords values");
+                        }
                     }
                     break;
                 case "3":
                     printFilledForm();
                     break;
-                case "4":
+                case "exit":
                     return;
                 default:
                     System.out.println("Invalid option");
@@ -53,7 +60,7 @@ public class DynamicFormHandler {
                     formType, form.getName(), filePath);
             return form;
         } catch (IOException e) {
-            System.out.printf("%s form could not be loaded. Deserialization failed!\n%s",
+            System.out.printf("%s form could not be loaded. Deserialization failed!\n%s\n",
                     formType, e.getMessage());
             return null;
         }
@@ -71,6 +78,16 @@ public class DynamicFormHandler {
         }
     }
 
+    private void SecurePasswordFields(DynamicForm filledForm) throws NoSuchAlgorithmException {
+        List<FormElement<?>> elements = filledForm.getFormElements();
+        for (FormElement<?> element: elements
+        ) {
+            if(element instanceof TextPassword){
+                element.defineValue(SimpleMd5.getHash(element.getValue().toString()));
+            }
+        }
+    }
+
     private FileSerializer getFileSerializer(FileFormat format) {
         switch (format) {
             case JSON:
@@ -85,7 +102,7 @@ public class DynamicFormHandler {
         if (filledForm != null) {
             System.out.printf("----- %s -----%n", filledForm.getName());
             if (filledForm.isFilled()) {
-                for (FormElement element : filledForm.getFormElements()) {
+                for (FormElement<?> element : filledForm.getFormElements()) {
                     System.out.println(element);
                 }
             } else {
@@ -99,19 +116,20 @@ public class DynamicFormHandler {
         DynamicForm filledForm = new DynamicForm();
         filledForm.setName(templateForm.getName());
         int filledField = 0;
-        List<FormElement> formElements = templateForm.getFormElements();
+        List<FormElement<?>> formElements = templateForm.getFormElements();
         System.out.println("--- Filling form \"" + templateForm.getName() + "\" ---");
         while (filledField < formElements.size()) {
-            FormElement fieldTemplate = formElements.get(filledField);
+            FormElement<?> fieldTemplate = formElements.get(filledField);
             System.out.print("Enter \"" + fieldTemplate.getName() + "\": ");
             System.out.print(fieldTemplate.showValueOptions());
             String line = InputReader.readLine();
-            if (fieldTemplate.validate(line).size() == 0) {
-                fieldTemplate.setValue(line);
+            List<String> violations = fieldTemplate.validate(line);
+            if (violations.size() == 0) {
+                fieldTemplate.defineValue(line);
                 filledForm.addFormElement(fieldTemplate);
                 filledField++;
             } else {
-                printViolations(fieldTemplate.validate(line));
+                printViolations(violations);
             }
         }
         return filledForm;
@@ -137,7 +155,7 @@ public class DynamicFormHandler {
             System.out.printf("Choose an option (exit option will finish the adding)%n" +
                     "1) Text      2) Text Number    3) Text Password%n" +
                     "4) Date      5) Checkbox       6) Radio Button%n" +
-                    "7) Dropdown  Exit%nOption number: ");
+                    "7) Dropdown  Exit%nOption: ");
             String option = InputReader.readLine().toLowerCase();
             switch (option) {
                 case "1":
