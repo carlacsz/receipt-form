@@ -1,4 +1,4 @@
-package com.company.components;
+package com.company.receipt.components;
 
 import javax.validation.Valid;
 import java.text.DateFormat;

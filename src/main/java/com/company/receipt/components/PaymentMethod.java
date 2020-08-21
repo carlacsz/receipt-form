@@ -1,4 +1,4 @@
-package com.company.components;
+package com.company.receipt.components;
 
 public enum PaymentMethod {
     CASH("Cash"),

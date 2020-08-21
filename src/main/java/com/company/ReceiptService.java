@@ -1,9 +1,9 @@
 package com.company;
 
-import com.company.components.*;
+import com.company.receipt.components.PaymentDetail;
+import com.company.receipt.components.Receipt;
 import com.company.utils.Encryptor;
 import com.company.utils.FileSerializer;
-import com.company.utils.JsonFileSerializer;
 import com.company.utils.Response;
 
 import javax.validation.ConstraintViolation;
@@ -22,7 +22,7 @@ public class ReceiptService {
         this.validator = validator;
     }
 
-    public Response saveReceipt(Receipt receipt) {
+    public Response<String> saveReceipt(Receipt receipt) {
         if (!isValid(receipt)) {
             return new Response(false, validate(receipt).toString());
         }
@@ -36,17 +36,17 @@ public class ReceiptService {
                 paymentDetail.setCreditCardNumber(encryptedCardNumber);
             }
             serializer.write(filePath, receipt);
-            return new Response(true, "Receipt was stored successfully!");
+            return new Response<>(true, "Receipt was stored successfully!");
         } catch (IOException e) {
-            return new Response(false,
+            return new Response<>(false,
                     "Receipt could not be saved. Serialization failed!\n" + e.getMessage());
         } catch (Exception e) {
-            return new Response(false,
+            return new Response<>(false,
                     "Receipt could not be saved. Encryption failed!");
         }
     }
 
-    public Response getReceipt() {
+    public Response<?> getReceipt() {
         try {
             Receipt receipt = serializer.read(filePath, Receipt.class);
             PaymentDetail paymentDetail = receipt.getPaymentDetail();
@@ -55,12 +55,12 @@ public class ReceiptService {
                 String decryptedCardNumber = Encryptor.decrypt(cardNumber);
                 paymentDetail.setCreditCardNumber(decryptedCardNumber);
             }
-            return new Response(true, receipt.toString());
+            return new Response<>(true, receipt);
         } catch (IOException e) {
-            return new Response(false,
+            return new Response<>(false,
                     "Receipt could not be loaded. Deserialization failed!\n" + e.getMessage());
         } catch (Exception e) {
-            return new Response(false,
+            return new Response<>(false,
                     "Receipt could not be loaded. Decryption failed!");
         }
     }

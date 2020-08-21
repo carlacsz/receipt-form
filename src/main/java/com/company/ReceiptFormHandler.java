@@ -1,11 +1,10 @@
 package com.company;
 
-import com.company.components.*;
+import com.company.receipt.components.*;
 import com.company.utils.InputReader;
 import com.company.utils.Response;
 
 import javax.validation.ConstraintViolation;
-import java.util.Scanner;
 import java.util.Set;
 
 public class ReceiptFormHandler {

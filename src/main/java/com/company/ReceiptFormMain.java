@@ -8,7 +8,7 @@ import javax.validation.ValidatorFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Main {
+public class ReceiptFormMain {
     public static final Logger H_LOGGER = Logger.getLogger("org.hibernate");
     public static final Logger LOGGER = Logger.getLogger("com.company");
 

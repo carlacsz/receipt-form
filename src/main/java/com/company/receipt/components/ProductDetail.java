@@ -1,4 +1,4 @@
-package com.company.components;
+package com.company.receipt.components;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;

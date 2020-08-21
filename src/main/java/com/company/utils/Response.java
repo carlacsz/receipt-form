@@ -1,10 +1,10 @@
 package com.company.utils;
 
-public class Response {
+public class Response<T> {
     private final boolean successful;
-    private final String msg;
+    private final T msg;
 
-    public Response(boolean successful, String msg) {
+    public Response(boolean successful, T msg) {
         this.msg = msg;
         this.successful = successful;
     }
@@ -13,7 +13,7 @@ public class Response {
         return successful;
     }
 
-    public String getMsg() {
+    public T getMsg() {
         return msg;
     }
 }
