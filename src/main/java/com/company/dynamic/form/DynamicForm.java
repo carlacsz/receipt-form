@@ -8,7 +8,7 @@ import java.util.List;
 public class DynamicForm {
     private String name = "";
     private boolean filled = false;
-    private List<FormElement> formElements = new ArrayList<>();
+    private List<FormElement<?>> formElements = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -26,15 +26,15 @@ public class DynamicForm {
         this.filled = filled;
     }
 
-    public List<FormElement> getFormElements() {
+    public List<FormElement<?>> getFormElements() {
         return formElements;
     }
 
-    public void setFormElements(List<FormElement> formElements) {
+    public void setFormElements(List<FormElement<?>> formElements) {
         this.formElements = formElements;
     }
 
-    public void addFormElement(FormElement formElement) {
+    public void addFormElement(FormElement<?> formElement) {
         this.formElements.add(formElement);
     }
 }

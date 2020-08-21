@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
 
-public class JsonFileSerializer implements FileSerializer{
+public class JsonFileSerializer implements FileSerializer {
     public static final Logger LOGGER = Logger.getLogger(JsonFileSerializer.class.getName());
     public static final String DATE_FORMAT = "dd/MM/yyyy HH:mm a";
 
@@ -15,7 +15,7 @@ public class JsonFileSerializer implements FileSerializer{
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(new SimpleDateFormat(DATE_FORMAT));
         try {
-            objectMapper.writeValue(new File(filePath), obj);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(filePath), obj);
             return obj;
         } catch (IOException e) {
             LOGGER.warning(String.format("Could not serialize object with type \"%s\" as json to file \"%s\"",
@@ -25,11 +25,11 @@ public class JsonFileSerializer implements FileSerializer{
         }
     }
 
-    public <T> T read(String filePath, Class clazz) throws IOException {
+    public <T> T read(String filePath, Class<?> clazz) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setDateFormat(new SimpleDateFormat(DATE_FORMAT));
         try {
-            return  (T) objectMapper.readValue(new File(filePath), clazz);
+            return (T) objectMapper.readValue(new File(filePath), clazz);
         } catch (IOException e) {
             LOGGER.warning(String.format("Could not deserialize object from file \"%s\" and given class \"%s\"",
                     filePath, clazz));

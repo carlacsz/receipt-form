@@ -7,8 +7,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class DateField extends FormElement {
+public class DateField extends FormElement<Date> {
     private static final String format = "dd/MM/yyyy";
+
+    @Override
+    public void defineValue(String value) {
+        DateFormat dateFormat = new SimpleDateFormat(format);
+        try {
+            setValue(dateFormat.parse(value));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public String showValueOptions() {
@@ -30,11 +40,6 @@ public class DateField extends FormElement {
     @Override
     public String toString() {
         DateFormat dateFormat = new SimpleDateFormat(format);
-        try {
-            Date date = dateFormat.parse(getValue());
-            return getName() + ": " + dateFormat.format(date);
-        } catch (ParseException e) {
-            return getName() + ": " + getValue();
-        }
+        return getName() + ": " + dateFormat.format(getValue());
     }
 }

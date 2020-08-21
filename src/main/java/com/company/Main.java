@@ -18,7 +18,7 @@ public class Main {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         ReceiptService service = new ReceiptService(new JsonFileSerializer(), validator);
-        FormHandler handler = new FormHandler(service);
+        ReceiptFormHandler handler = new ReceiptFormHandler(service);
         handler.start();
     }
 }

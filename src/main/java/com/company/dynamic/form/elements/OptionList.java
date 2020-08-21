@@ -3,7 +3,7 @@ package com.company.dynamic.form.elements;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class OptionList extends FormElement {
+public abstract class OptionList extends FormElement<String> {
     private List<String> options = new ArrayList<>();
 
     public List<String> getOptions() {
@@ -12,6 +12,11 @@ public abstract class OptionList extends FormElement {
 
     public void setOptions(List<String> options) {
         this.options = options;
+    }
+
+    @Override
+    public void defineValue(String value) {
+        setValue(options.get(Integer.parseInt(value) - 1));
     }
 
     @Override
@@ -39,8 +44,4 @@ public abstract class OptionList extends FormElement {
         return violations;
     }
 
-    @Override
-    public String toString() {
-        return getName() + ": " + options.get(Integer.parseInt(getValue()) - 1);
-    }
 }

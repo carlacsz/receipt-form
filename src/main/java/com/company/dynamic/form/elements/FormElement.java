@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, property = "@class")
-public abstract class FormElement {
+public abstract class FormElement<T> {
     private String name;
-    private String value;
+    private T value;
 
     public String getName() {
         return name;
@@ -18,13 +18,15 @@ public abstract class FormElement {
         this.name = name;
     }
 
-    public String getValue() {
+    public T getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(T value) {
         this.value = value;
     }
+
+    public abstract void defineValue(String value);
 
     public String showValueOptions() {
         return "";

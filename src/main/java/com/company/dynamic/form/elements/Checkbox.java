@@ -3,7 +3,12 @@ package com.company.dynamic.form.elements;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Checkbox extends FormElement {
+public class Checkbox extends FormElement<Boolean> {
+
+    @Override
+    public void defineValue(String value) {
+        setValue(Boolean.parseBoolean(value));
+    }
 
     @Override
     public String showValueOptions() {
@@ -21,7 +26,7 @@ public class Checkbox extends FormElement {
 
     @Override
     public String toString() {
-        String checked = Boolean.parseBoolean(getValue()) ? "Yes" : "No";
+        String checked = getValue() ? "Yes" : "No";
         return getName() + ": " + checked;
     }
 }

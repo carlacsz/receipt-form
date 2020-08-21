@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Text extends FormElement {
+public class Text extends FormElement<String> {
     private String patternStr;
     private Integer min;
     private Integer max;
@@ -32,6 +32,11 @@ public class Text extends FormElement {
 
     public void setMax(Integer max) {
         this.max = max;
+    }
+
+    @Override
+    public void defineValue(String value) {
+        setValue(value);
     }
 
     @Override

@@ -1,33 +1,31 @@
 package com.company;
 
 import com.company.components.*;
+import com.company.utils.InputReader;
 import com.company.utils.Response;
 
 import javax.validation.ConstraintViolation;
 import java.util.Scanner;
 import java.util.Set;
 
-public class FormHandler {
-    private static final String INVALID_NUMBER_FORMAT = "Invalid number format, try again!";
-
-    private final Scanner scanner = new Scanner(System.in);
+public class ReceiptFormHandler {
     private final ReceiptService service;
 
-    public FormHandler(ReceiptService service) {
+    public ReceiptFormHandler(ReceiptService service) {
         this.service = service;
     }
 
     public void start() {
         while (true) {
             printMainOptions();
-            String option = readLine();
+            String option = InputReader.readLine();
             switch (option) {
                 case "1":
                     Response res = fillReceiptForm();
                     System.out.println(res.getMsg());
                     if (res.isSuccessful()) {
                         System.out.println("Enter yes if you want to see the Receipt Summary");
-                        if ("yes".equalsIgnoreCase(scanner.nextLine())) {
+                        if ("yes".equalsIgnoreCase(InputReader.readLine())) {
                             System.out.println(service.getReceipt().getMsg());
                         }
                     }
@@ -61,26 +59,26 @@ public class FormHandler {
         // Client Data
         client.setFullName(readString("Full Name", "fullName", Client.class));
         ci.setNumber(readInt("CI Number", "number", CI.class));
-        ci.setExtension((CIExtension) readEnum("CI extension", CIExtension.class));
+        ci.setExtension((CIExtension) InputReader.readEnumFor("CI extension", CIExtension.class));
         client.setEmail(readString("Email", "email", Client.class));
         client.setAddress(readString("Address", "address", Client.class));
 
         // Payment Detail
         paymentDetail.setPaymentMethod(
-                (PaymentMethod) readEnum("Payment method", PaymentMethod.class));
+                (PaymentMethod) InputReader.readEnumFor("Payment method", PaymentMethod.class));
         if (paymentDetail.getPaymentMethod() == PaymentMethod.CREDIT_CARD) {
             paymentDetail.setCreditCardNumber(readString(
-                    "Credit card number","creditCardNumber", PaymentDetail.class));
+                    "Credit card number", "creditCardNumber", PaymentDetail.class));
         }
 
         // Product Detail
         productDetail.setDescription(readString(
-                "Product description","description", ProductDetail.class));
+                "Product description", "description", ProductDetail.class));
         productDetail.setQuantity(readInt(
-                "Product quantity","quantity", ProductDetail.class));
+                "Product quantity", "quantity", ProductDetail.class));
         productDetail.setUnitPrice(readDouble(
-                "Product unit price","unitPrice", ProductDetail.class));
-        productDetail.setCurrency((Currency) readEnum("Currency", Currency.class));
+                "Product unit price", "unitPrice", ProductDetail.class));
+        productDetail.setCurrency((Currency) InputReader.readEnumFor("Currency", Currency.class));
 
         client.setCi(ci);
         receipt.setClient(client);
@@ -93,8 +91,7 @@ public class FormHandler {
     private String readString(String name, String propertyName, Class<?> ownerClazz) {
         Set<? extends ConstraintViolation<?>> violations;
         while (true) {
-            System.out.printf("Enter %s: ", name);
-            String line = readLine();
+            String line = InputReader.readLineFor(name);
             violations = service.validateValue(ownerClazz, propertyName, line);
             if (violations.isEmpty()) {
                 return line;
@@ -106,62 +103,24 @@ public class FormHandler {
     private int readInt(String name, String propertyName, Class<?> ownerClazz) {
         Set<? extends ConstraintViolation<?>> violations;
         while (true) {
-            System.out.printf("Enter %s: ", name);
-            try {
-                int number = Integer.parseInt(readLine());
-                violations = service.validateValue(ownerClazz, propertyName, number);
-                if (violations.isEmpty()) {
-                    return number;
-                }
-                printConstraintViolations(violations);
-            } catch (NumberFormatException e) {
-                System.out.println(INVALID_NUMBER_FORMAT);
+            int number = InputReader.readIntFor(name);
+            violations = service.validateValue(ownerClazz, propertyName, number);
+            if (violations.isEmpty()) {
+                return number;
             }
-
+            printConstraintViolations(violations);
         }
     }
 
     private double readDouble(String name, String propertyName, Class<?> ownerClazz) {
         Set<? extends ConstraintViolation<?>> violations;
         while (true) {
-            System.out.printf("Enter %s: ", name);
-            try {
-                double number = Double.parseDouble(readLine());
-                violations = service.validateValue(ownerClazz, propertyName, number);
-                if (violations.isEmpty()) {
-                    return number;
-                }
-                printConstraintViolations(violations);
-            } catch (NumberFormatException e) {
-                System.out.println(INVALID_NUMBER_FORMAT);
+            double number = InputReader.readDoubleFor(name);
+            violations = service.validateValue(ownerClazz, propertyName, number);
+            if (violations.isEmpty()) {
+                return number;
             }
-
-        }
-    }
-
-    private Enum<?> readEnum(String name, Class<?> enumClass) {
-        Enum<?>[] enumConstants = (Enum<?>[]) enumClass.getEnumConstants();
-        while (true) {
-            System.out.printf("Choose %s:%n", name);
-            printEnumOptions(enumConstants);
-            System.out.print("Option number: ");
-            try {
-                return enumConstants[Integer.parseInt(readLine()) - 1];
-            } catch (NumberFormatException e) {
-                System.out.println(INVALID_NUMBER_FORMAT);
-            } catch (Exception e) {
-                System.out.println("Invalid option");
-            }
-        }
-    }
-
-    private String readLine() {
-        return scanner.nextLine();
-    }
-
-    private void printEnumOptions(Enum<?>[] options) {
-        for (Enum<?> option : options) {
-            System.out.printf("%d) %s%n", option.ordinal() + 1, option.name());
+            printConstraintViolations(violations);
         }
     }
 
