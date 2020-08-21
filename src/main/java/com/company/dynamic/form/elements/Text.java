@@ -44,18 +44,18 @@ public class Text extends FormElement<String> {
         List<String> violations = new ArrayList<>();
         if (min != null && str.length() < min) {
             violations.add(String.format("%s has to be at least %s characters",
-                    str, min));
+                    getName(), min));
         }
         if (max != null && str.length() > max) {
             violations.add(String.format("%s has to be max %s characters long",
-                    str, max));
+                    getName(), max));
         }
         if (patternStr != null) {
             Pattern pattern = Pattern.compile(patternStr);
             Matcher matcher = pattern.matcher(str);
             if (!matcher.matches()) {
                 violations.add(String.format("%s tiene que corresponder a la expresión regular \"%s\"",
-                        str, patternStr));
+                        getName(), patternStr));
             }
         }
         return violations;

@@ -3,16 +3,16 @@ package com.company;
 import com.company.dynamic.form.DynamicForm;
 import com.company.dynamic.form.FileFormat;
 import com.company.dynamic.form.elements.*;
-import com.company.utils.FileSerializer;
-import com.company.utils.InputReader;
-import com.company.utils.JsonFileSerializer;
-import com.company.utils.SimpleMd5;
+import com.company.utils.*;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class DynamicFormHandler {
+    private final DynamicFormService service;
+
+    public DynamicFormHandler(DynamicFormService service) {
+        this.service = service;
+    }
 
     public void start() {
         while (true) {
@@ -30,12 +30,7 @@ public class DynamicFormHandler {
                     if (templateForm != null) {
                         DynamicForm filledForm = fillFormFromTemplate(templateForm);
                         filledForm.setFilled(true);
-                        try {
-                            SecurePasswordFields(filledForm);
-                            saveForm(filledForm, "Filled");
-                        } catch (NoSuchAlgorithmException e) {
-                            System.out.println("Cant process securing passwords values");
-                        }
+                        saveForm(filledForm, "Filled");
                     }
                     break;
                 case "3":
@@ -51,49 +46,25 @@ public class DynamicFormHandler {
     }
 
     private DynamicForm getForm(String formType) {
-        FileSerializer serializer = getFileSerializer(FileFormat.JSON);
         System.out.printf("Enter file path where the %s form is saved%nPath: ", formType);
         String filePath = InputReader.readLine();
-        try {
-            DynamicForm form = serializer.read(filePath, DynamicForm.class);
-            System.out.printf("%s form \"%s\" was successfully loaded from file \"%s\"\n",
-                    formType, form.getName(), filePath);
-            return form;
-        } catch (IOException e) {
-            System.out.printf("%s form could not be loaded. Deserialization failed!\n%s\n",
-                    formType, e.getMessage());
+        Response<?> response = service.getForm(FileFormat.JSON, filePath);
+        if (response.isSuccessful()) {
+            return (DynamicForm) response.getMsg();
+        } else {
+            System.out.println(response.getMsg());
             return null;
         }
     }
 
     private void saveForm(DynamicForm form, String formType) {
-        FileSerializer serializer = getFileSerializer(FileFormat.JSON);
         System.out.printf("Enter file path where the %s form will be saved%nPath: ", formType);
         String filePath = InputReader.readLine();
-        try {
-            serializer.write(filePath, form);
+        Response<?> response = service.saveForm(FileFormat.JSON, filePath, form);
+        if (response.isSuccessful()) {
             System.out.printf("%s form was stored successfully in file \"%s\"\n", formType, filePath);
-        } catch (IOException e) {
-            System.out.printf("%s form could not be saved. Serialization failed!\n%s", formType, e.getMessage());
-        }
-    }
-
-    private void SecurePasswordFields(DynamicForm filledForm) throws NoSuchAlgorithmException {
-        List<FormElement<?>> elements = filledForm.getFormElements();
-        for (FormElement<?> element: elements
-        ) {
-            if(element instanceof TextPassword){
-                element.defineValue(SimpleMd5.getHash(element.getValue().toString()));
-            }
-        }
-    }
-
-    private FileSerializer getFileSerializer(FileFormat format) {
-        switch (format) {
-            case JSON:
-                return new JsonFileSerializer();
-            default:
-                throw new IllegalStateException("Unexpected value: " + format);
+        } else {
+            System.out.println(response.getMsg());
         }
     }
 

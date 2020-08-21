@@ -21,11 +21,11 @@ public class TextNumber extends Text {
         } else {
             if (getMin() != null && Double.parseDouble(str) < getMin()) {
                 violations.add(String.format("%s has to be greater than %s",
-                        str, getMin()));
+                        getName(), getMin()));
             }
             if (getMax() != null && Double.parseDouble(str) > getMax()) {
                 violations.add(String.format("%s has to be less than %s",
-                        str, getMax()));
+                        getName(), getMax()));
             }
         }
         return violations;
