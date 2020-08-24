@@ -1,4 +1,4 @@
-package com.company;
+package com.company.dynamic.form;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

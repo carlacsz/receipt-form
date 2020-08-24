@@ -1,14 +1,23 @@
-package com.company;
+package com.company.dynamic.form;
 
-import com.company.dynamic.form.DynamicForm;
-import com.company.dynamic.form.FileFormat;
 import com.company.dynamic.form.elements.*;
 import com.company.utils.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class DynamicFormHandler {
     private final DynamicFormService service;
+
+    static {
+        FormElementFactory.register("1", new Text());
+        FormElementFactory.register("2", new TextNumber());
+        FormElementFactory.register("3", new TextPassword());
+        FormElementFactory.register("4", new DateField());
+        FormElementFactory.register("5", new Checkbox());
+        FormElementFactory.register("6", new RadioButton());
+        FormElementFactory.register("7", new Dropdown());
+    }
 
     public DynamicFormHandler(DynamicFormService service) {
         this.service = service;
@@ -123,103 +132,55 @@ public class DynamicFormHandler {
     private void addFormFieldsToTemplate(DynamicForm form) {
         while (true) {
             System.out.printf("Adding elements to form \"%s\"%n", form.getName());
-            System.out.printf("Choose an option (exit option will finish the adding)%n" +
-                    "1) Text      2) Text Number    3) Text Password%n" +
-                    "4) Date      5) Checkbox       6) Radio Button%n" +
-                    "7) Dropdown  Exit%nOption: ");
+            printFormElements();
             String option = InputReader.readLine().toLowerCase();
-            switch (option) {
-                case "1":
-                    form.addFormElement(createText());
-                    break;
-                case "2":
-                    form.addFormElement(createTextNumber());
-                    break;
-                case "3":
-                    form.addFormElement(createTextPassword());
-                    break;
-                case "4":
-                    form.addFormElement(createDateField());
-                    break;
-                case "5":
-                    form.addFormElement(createCheckbox());
-                    break;
-                case "6":
-                    form.addFormElement(createRadioButton());
-                    break;
-                case "7":
-                    form.addFormElement(createDropdown());
-                    break;
-                case "exit":
-                    return;
-                default:
+            if ("exit".equalsIgnoreCase(option)) {
+                break;
+            } else {
+                FormElement<?> formElement = FormElementFactory.getInstance(option);
+                if (formElement == null) {
                     System.out.println("Invalid option");
-                    break;
+                } else {
+                    String formElementType = formElement.getClass().getSimpleName();
+                    formElement.setName(InputReader.readLineFor(formElementType + " field name"));
+                    if (formElement instanceof Text && !(formElement instanceof TextNumber)) {
+                        if (InputReader.wantsToAddValueFor("Pattern validation"))
+                            ((Text) formElement).setPatternStr(InputReader.readPatternFor(formElement.getName()));
+                    }
+                    if (formElement instanceof Text) {
+                        addRangeValidations((Text) formElement);
+                    }
+                    if (formElement instanceof OptionList) {
+                        addOptionsFor((OptionList) formElement, formElementType);
+                    }
+                    form.addFormElement(formElement);
+                }
             }
         }
     }
 
-    private Text createText() {
-        Text text = new Text();
-        text.setName(InputReader.readLineFor("Text field name"));
-        if (InputReader.wantsToAddValueFor("Pattern validation"))
-            text.setPatternStr(InputReader.readPatternFor(text.getName()));
-        return addRangeValidations(text);
+    private void printFormElements() {
+        Map<String, FormElement<?>> formElements = FormElementFactory.getFormElemInstances();
+        System.out.println("Choose an option (Enter exit to finish the adding)");
+        for (Map.Entry<String, FormElement<?>> entry : formElements.entrySet()) {
+            System.out.println(entry.getKey() + ") " + entry.getValue().getClass().getSimpleName());
+        }
+        System.out.println("Option: ");
     }
 
-    private TextNumber createTextNumber() {
-        TextNumber textNumber = new TextNumber();
-        textNumber.setName(InputReader.readLineFor("Text Number field name"));
-        return (TextNumber) addRangeValidations(textNumber);
-    }
-
-    private TextPassword createTextPassword() {
-        TextPassword textPassword = new TextPassword();
-        textPassword.setName(InputReader.readLineFor("Text password field name"));
-        if (InputReader.wantsToAddValueFor("Pattern validation"))
-            textPassword.setPatternStr(InputReader.readPatternFor(textPassword.getName()));
-        return (TextPassword) addRangeValidations(textPassword);
-    }
-
-    private DateField createDateField() {
-        DateField dateField = new DateField();
-        dateField.setName(InputReader.readLineFor("Date field name"));
-        return dateField;
-    }
-
-    private Checkbox createCheckbox() {
-        Checkbox checkbox = new Checkbox();
-        checkbox.setName(InputReader.readLineFor("Checkbox field name"));
-        return checkbox;
-    }
-
-    private RadioButton createRadioButton() {
-        RadioButton radioButton = new RadioButton();
-        radioButton.setName(InputReader.readLineFor("Radio button field name"));
-        return (RadioButton) addOptionsFor(radioButton, "Radio Button");
-    }
-
-    private Dropdown createDropdown() {
-        Dropdown dropdown = new Dropdown();
-        dropdown.setName(InputReader.readLineFor("Dropdown field name"));
-        return (Dropdown) addOptionsFor(dropdown, "Dropdown");
-    }
-
-    private Text addRangeValidations(Text textField) {
+    private void addRangeValidations(Text textField) {
         if (InputReader.wantsToAddValueFor("Min validation"))
             textField.setMin(InputReader.readIntFor("Min value"));
         if (InputReader.wantsToAddValueFor("Max validation"))
             textField.setMax(InputReader.readIntFor("Max value"));
-        return textField;
     }
 
-    private OptionList addOptionsFor(OptionList optionList, String description) {
+    private void addOptionsFor(OptionList optionList, String description) {
         while (optionList.getOptions().size() == 0) {
             optionList.setOptions(InputReader.readMultipleLinesFor(description));
             if (optionList.getOptions().size() == 0) {
                 System.out.println(description + " must have at least one option");
             }
         }
-        return optionList;
     }
 }

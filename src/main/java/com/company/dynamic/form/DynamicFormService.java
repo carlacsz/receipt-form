@@ -1,7 +1,5 @@
-package com.company;
+package com.company.dynamic.form;
 
-import com.company.dynamic.form.DynamicForm;
-import com.company.dynamic.form.FileFormat;
 import com.company.dynamic.form.elements.FormElement;
 import com.company.dynamic.form.elements.TextPassword;
 import com.company.utils.*;
