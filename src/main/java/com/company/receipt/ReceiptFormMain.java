@@ -1,4 +1,4 @@
-package com.company;
+package com.company.receipt;
 
 import com.company.utils.JsonFileSerializer;
 
