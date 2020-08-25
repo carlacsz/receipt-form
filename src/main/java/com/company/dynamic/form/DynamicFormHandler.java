@@ -10,13 +10,13 @@ public class DynamicFormHandler {
     private final DynamicFormService service;
 
     static {
-        FormElementFactory.register("1", new Text());
-        FormElementFactory.register("2", new TextNumber());
-        FormElementFactory.register("3", new TextPassword());
-        FormElementFactory.register("4", new DateField());
-        FormElementFactory.register("5", new Checkbox());
-        FormElementFactory.register("6", new RadioButton());
-        FormElementFactory.register("7", new Dropdown());
+        FormElementFactory.register("1", Text.class);
+        FormElementFactory.register("2", TextNumber.class);
+        FormElementFactory.register("3", TextPassword.class);
+        FormElementFactory.register("4", DateField.class);
+        FormElementFactory.register("5", Checkbox.class);
+        FormElementFactory.register("6", RadioButton.class);
+        FormElementFactory.register("7", Dropdown.class);
     }
 
     public DynamicFormHandler(DynamicFormService service) {
@@ -160,10 +160,10 @@ public class DynamicFormHandler {
     }
 
     private void printFormElements() {
-        Map<String, FormElement<?>> formElements = FormElementFactory.getFormElemInstances();
+        Map<String, Class<?>> formElemClasses = FormElementFactory.getFormElemClasses();
         System.out.println("Choose an option (Enter exit to finish the adding)");
-        for (Map.Entry<String, FormElement<?>> entry : formElements.entrySet()) {
-            System.out.println(entry.getKey() + ") " + entry.getValue().getClass().getSimpleName());
+        for (Map.Entry<String, Class<?>> entry : formElemClasses.entrySet()) {
+            System.out.println(entry.getKey() + ") " + entry.getValue().getSimpleName());
         }
         System.out.println("Option: ");
     }

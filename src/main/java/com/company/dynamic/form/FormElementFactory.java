@@ -2,23 +2,30 @@ package com.company.dynamic.form;
 
 import com.company.dynamic.form.elements.FormElement;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
 public class FormElementFactory {
-    private static final Map<String, FormElement<?>> formElemInstances = new HashMap<>();
+    private static final Map<String, Class<?>> formElemClasses = new HashMap<>();
 
-    public static void register(String optionNumber, FormElement<?> instance) {
-        if (optionNumber != null && instance != null) {
-            formElemInstances.put(optionNumber, instance);
+    public static void register(String optionNumber, Class<?> clazz) {
+        if (optionNumber != null && clazz != null) {
+            formElemClasses.put(optionNumber, clazz);
         }
     }
 
     public static FormElement<?> getInstance(String optionNumber) {
-        return formElemInstances.get(optionNumber);
+        Class<?> formElement = formElemClasses.get(optionNumber);
+        try {
+            Constructor<?> cons = formElement.getConstructor();
+            return (FormElement<?>) cons.newInstance();
+        } catch (Exception e){
+            return null;
+        }
     }
 
-    public static Map<String, FormElement<?>> getFormElemInstances() {
-        return formElemInstances;
+    public static Map<String, Class<?>> getFormElemClasses() {
+        return formElemClasses;
     }
 }
