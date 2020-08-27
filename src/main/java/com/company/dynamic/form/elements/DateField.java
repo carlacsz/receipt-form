@@ -26,11 +26,11 @@ public class DateField extends FormElement<Date> {
     }
 
     @Override
-    public List<String> validate(String str) {
+    public List<String> validateValue(String value) {
         List<String> violations = new ArrayList<>();
         DateFormat dateFormat = new SimpleDateFormat(format);
         try {
-            dateFormat.parse(str);
+            dateFormat.parse(value);
         } catch (ParseException e) {
             violations.add("Invalid date format, use the format " + format);
         }

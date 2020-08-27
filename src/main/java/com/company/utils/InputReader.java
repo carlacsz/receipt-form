@@ -39,10 +39,10 @@ public class InputReader {
         }
     }
 
-    public static Enum<?> readEnumFor(String name, Class<?> enumClass) {
+    public static Enum<?> readEnumFor(String description, Class<?> enumClass) {
         Enum<?>[] enumConstants = (Enum<?>[]) enumClass.getEnumConstants();
         while (true) {
-            System.out.printf("Choose %s:%n", name);
+            System.out.printf("Choose %s:%n", description);
             printEnumOptions(enumConstants);
             System.out.print("Option number: ");
             try {

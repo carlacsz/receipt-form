@@ -10,6 +10,16 @@ public abstract class FormElement<T> {
     private String name;
     private T value;
 
+    public abstract void defineValue(String value);
+
+    public String showValueOptions() {
+        return "";
+    }
+
+    public List<String> validateValue(String value) {
+        return new ArrayList<>();
+    }
+
     public String getName() {
         return name;
     }
@@ -22,18 +32,8 @@ public abstract class FormElement<T> {
         return value;
     }
 
-    public void setValue(T value) {
+    protected void setValue(T value) {
         this.value = value;
-    }
-
-    public abstract void defineValue(String value);
-
-    public String showValueOptions() {
-        return "";
-    }
-
-    public List<String> validate(String str) {
-        return new ArrayList<>();
     }
 
     @Override

@@ -11,19 +11,19 @@ public class TextNumber extends Text {
     }
 
     @Override
-    public List<String> validate(String str) {
+    public List<String> validateValue(String value) {
         List<String> violations = new ArrayList<>();
 
         Pattern pattern = Pattern.compile(getPatternStr());
-        Matcher matcher = pattern.matcher(str);
+        Matcher matcher = pattern.matcher(value);
         if (!matcher.matches()) {
             violations.add("Not a valid number");
         } else {
-            if (getMin() != null && Double.parseDouble(str) < getMin()) {
+            if (getMin() != null && Double.parseDouble(value) < getMin()) {
                 violations.add(String.format("%s has to be greater than %s",
                         getName(), getMin()));
             }
-            if (getMax() != null && Double.parseDouble(str) > getMax()) {
+            if (getMax() != null && Double.parseDouble(value) > getMax()) {
                 violations.add(String.format("%s has to be less than %s",
                         getName(), getMax()));
             }

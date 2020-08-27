@@ -40,19 +40,19 @@ public class Text extends FormElement<String> {
     }
 
     @Override
-    public List<String> validate(String str) {
+    public List<String> validateValue(String value) {
         List<String> violations = new ArrayList<>();
-        if (min != null && str.length() < min) {
+        if (min != null && value.length() < min) {
             violations.add(String.format("%s has to be at least %s characters",
                     getName(), min));
         }
-        if (max != null && str.length() > max) {
+        if (max != null && value.length() > max) {
             violations.add(String.format("%s has to be max %s characters long",
                     getName(), max));
         }
         if (patternStr != null) {
             Pattern pattern = Pattern.compile(patternStr);
-            Matcher matcher = pattern.matcher(str);
+            Matcher matcher = pattern.matcher(value);
             if (!matcher.matches()) {
                 violations.add(String.format("%s tiene que corresponder a la expresión regular \"%s\"",
                         getName(), patternStr));

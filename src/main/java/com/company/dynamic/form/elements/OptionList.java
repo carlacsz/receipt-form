@@ -34,10 +34,10 @@ public abstract class OptionList extends FormElement<String> {
     }
 
     @Override
-    public List<String> validate(String str) {
+    public List<String> validateValue(String value) {
         List<String> violations = new ArrayList<>();
         try {
-            options.get(Integer.parseInt(str) - 1);
+            options.get(Integer.parseInt(value) - 1);
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             violations.add("Not a valid option");
         }

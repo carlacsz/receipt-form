@@ -55,9 +55,10 @@ public class DynamicFormHandler {
     }
 
     private DynamicForm getForm(String formType) {
+        FileFormat fileFormat = (FileFormat) InputReader.readEnumFor("in what file format the form is saved", FileFormat.class);
         System.out.printf("Enter file path where the %s form is saved%nPath: ", formType);
         String filePath = InputReader.readLine();
-        Response<?> response = service.getForm(FileFormat.JSON, filePath);
+        Response<?> response = service.getForm(fileFormat, filePath);
         if (response.isSuccessful()) {
             return (DynamicForm) response.getMsg();
         } else {
@@ -67,9 +68,10 @@ public class DynamicFormHandler {
     }
 
     private void saveForm(DynamicForm form, String formType) {
+        FileFormat fileFormat = (FileFormat) InputReader.readEnumFor("in what file format the form will be saved", FileFormat.class);
         System.out.printf("Enter file path where the %s form will be saved%nPath: ", formType);
         String filePath = InputReader.readLine();
-        Response<?> response = service.saveForm(FileFormat.JSON, filePath, form);
+        Response<?> response = service.saveForm(fileFormat, filePath, form);
         if (response.isSuccessful()) {
             System.out.printf("%s form was stored successfully in file \"%s\"\n", formType, filePath);
         } else {
@@ -103,7 +105,7 @@ public class DynamicFormHandler {
             System.out.print("Enter \"" + fieldTemplate.getName() + "\": ");
             System.out.print(fieldTemplate.showValueOptions());
             String line = InputReader.readLine();
-            List<String> violations = fieldTemplate.validate(line);
+            List<String> violations = fieldTemplate.validateValue(line);
             if (violations.size() == 0) {
                 fieldTemplate.defineValue(line);
                 filledForm.addFormElement(fieldTemplate);

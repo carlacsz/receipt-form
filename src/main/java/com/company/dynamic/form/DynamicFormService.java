@@ -11,7 +11,7 @@ import java.util.List;
 public class DynamicFormService {
 
     public Response<?> getForm(FileFormat fileFormat, String filePath) {
-        FileSerializer serializer = getFileSerializer(fileFormat);
+        ISerializer<DynamicForm> serializer = getFileSerializer(fileFormat);
         try {
             DynamicForm form = serializer.read(filePath, DynamicForm.class);
             return new Response<>(true, form);
@@ -30,7 +30,7 @@ public class DynamicFormService {
                         "Form could not be saved. Couldn't secure passwords values for form " + form.getName());
             }
         }
-        FileSerializer serializer = getFileSerializer(fileFormat);
+        ISerializer<DynamicForm> serializer = getFileSerializer(fileFormat);
         try {
             serializer.write(filePath, form);
             return new Response<>(true, form);
@@ -40,9 +40,12 @@ public class DynamicFormService {
         }
     }
 
-    private FileSerializer getFileSerializer(FileFormat format) {
+    private ISerializer<DynamicForm> getFileSerializer(FileFormat format) {
         if (format == FileFormat.JSON) {
-            return new JsonFileSerializer();
+            return new JsonSerializer<>();
+        }
+        if (format == FileFormat.XML) {
+            return new XmlSerializer<>();
         }
         throw new IllegalStateException("Unexpected value: " + format);
     }

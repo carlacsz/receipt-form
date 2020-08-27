@@ -10,6 +10,10 @@ public class DynamicForm {
     private boolean filled = false;
     private List<FormElement<?>> formElements = new ArrayList<>();
 
+    public void addFormElement(FormElement<?> formElement) {
+        this.formElements.add(formElement);
+    }
+
     public String getName() {
         return name;
     }
@@ -34,7 +38,4 @@ public class DynamicForm {
         this.formElements = formElements;
     }
 
-    public void addFormElement(FormElement<?> formElement) {
-        this.formElements.add(formElement);
-    }
 }

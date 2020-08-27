@@ -16,9 +16,9 @@ public class Checkbox extends FormElement<Boolean> {
     }
 
     @Override
-    public List<String> validate(String str) {
+    public List<String> validateValue(String value) {
         List<String> violations = new ArrayList<>();
-        if (!"true".equalsIgnoreCase(str) && !"false".equalsIgnoreCase(str)) {
+        if (!"true".equalsIgnoreCase(value) && !"false".equalsIgnoreCase(value)) {
             violations.add("Invalid value, should be true or false");
         }
         return violations;

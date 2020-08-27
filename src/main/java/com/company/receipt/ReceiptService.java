@@ -3,7 +3,7 @@ package com.company.receipt;
 import com.company.receipt.components.PaymentDetail;
 import com.company.receipt.components.Receipt;
 import com.company.utils.Encryptor;
-import com.company.utils.FileSerializer;
+import com.company.utils.ISerializer;
 import com.company.utils.Response;
 
 import javax.validation.ConstraintViolation;
@@ -15,16 +15,16 @@ import java.util.Set;
 public class ReceiptService {
     public static final String filePath = "src/data/receipt.json";
     private final Validator validator;
-    private final FileSerializer serializer;
+    private final ISerializer<Receipt> serializer;
 
-    public ReceiptService(FileSerializer serializer, Validator validator) {
+    public ReceiptService(ISerializer<Receipt> serializer, Validator validator) {
         this.serializer = serializer;
         this.validator = validator;
     }
 
     public Response<String> saveReceipt(Receipt receipt) {
         if (!isValid(receipt)) {
-            return new Response(false, validate(receipt).toString());
+            return new Response<>(false, validate(receipt).toString());
         }
         receipt.setCreatedDate(new Date());
         receipt.getProductDetail().calculateTotalPrice();
