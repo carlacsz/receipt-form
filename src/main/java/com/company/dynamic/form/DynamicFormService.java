@@ -1,12 +1,8 @@
 package com.company.dynamic.form;
 
-import com.company.dynamic.form.elements.FormElement;
-import com.company.dynamic.form.elements.TextPassword;
 import com.company.utils.*;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 public class DynamicFormService {
 
@@ -22,14 +18,6 @@ public class DynamicFormService {
     }
 
     public Response<?> saveForm(FileFormat fileFormat, String filePath, DynamicForm form) {
-        if (form.isFilled()) {
-            try {
-                SecurePasswordFields(form);
-            } catch (NoSuchAlgorithmException e) {
-                new Response<>(false,
-                        "Form could not be saved. Couldn't secure passwords values for form " + form.getName());
-            }
-        }
         ISerializer<DynamicForm> serializer = getFileSerializer(fileFormat);
         try {
             serializer.write(filePath, form);
@@ -48,15 +36,5 @@ public class DynamicFormService {
             return new XmlSerializer<>();
         }
         throw new IllegalStateException("Unexpected value: " + format);
-    }
-
-    private void SecurePasswordFields(DynamicForm filledForm) throws NoSuchAlgorithmException {
-        List<FormElement<?>> elements = filledForm.getFormElements();
-        for (FormElement<?> element : elements
-        ) {
-            if (element instanceof TextPassword) {
-                element.defineValue(SimpleMd5.getHash(element.getValue().toString()));
-            }
-        }
     }
 }
