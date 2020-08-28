@@ -30,4 +30,9 @@ public class TextNumber extends Text {
         }
         return violations;
     }
+
+    @Override
+    public void fillValidations() {
+        this.fillRangeValidations();
+    }
 }

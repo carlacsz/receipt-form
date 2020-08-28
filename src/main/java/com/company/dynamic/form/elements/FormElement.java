@@ -20,6 +20,8 @@ public abstract class FormElement<T> {
         return new ArrayList<>();
     }
 
+    public void fillValidations(){};
+
     public String getName() {
         return name;
     }

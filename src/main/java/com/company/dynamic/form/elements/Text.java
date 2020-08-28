@@ -1,5 +1,7 @@
 package com.company.dynamic.form.elements;
 
+import com.company.utils.InputReader;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -59,5 +61,19 @@ public class Text extends FormElement<String> {
             }
         }
         return violations;
+    }
+
+    @Override
+    public void fillValidations() {
+        if (InputReader.wantsToAddValueFor("Pattern validation"))
+            patternStr = InputReader.readPatternFor(getName());
+        fillRangeValidations();
+    }
+
+    protected void fillRangeValidations() {
+        if (InputReader.wantsToAddValueFor("Min validation"))
+            min = InputReader.readIntFor("Min value");
+        if (InputReader.wantsToAddValueFor("Max validation"))
+            max = InputReader.readIntFor("Max value");
     }
 }

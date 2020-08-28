@@ -1,5 +1,7 @@
 package com.company.dynamic.form.elements;
 
+import com.company.utils.InputReader;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,4 +46,13 @@ public abstract class OptionList extends FormElement<String> {
         return violations;
     }
 
+    @Override
+    public void fillValidations() {
+        while (options.size() == 0) {
+            options = InputReader.readMultipleLinesFor(this.getClass().getSimpleName());
+            if (options.size() == 0) {
+                System.out.println(this.getClass().getSimpleName() + " must have at least one option");
+            }
+        }
+    }
 }

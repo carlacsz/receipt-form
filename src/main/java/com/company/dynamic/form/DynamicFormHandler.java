@@ -145,16 +145,7 @@ public class DynamicFormHandler {
                 } else {
                     String formElementType = formElement.getClass().getSimpleName();
                     formElement.setName(InputReader.readLineFor(formElementType + " field name"));
-                    if (formElement instanceof Text && !(formElement instanceof TextNumber)) {
-                        if (InputReader.wantsToAddValueFor("Pattern validation"))
-                            ((Text) formElement).setPatternStr(InputReader.readPatternFor(formElement.getName()));
-                    }
-                    if (formElement instanceof Text) {
-                        addRangeValidations((Text) formElement);
-                    }
-                    if (formElement instanceof OptionList) {
-                        addOptionsFor((OptionList) formElement, formElementType);
-                    }
+                    formElement.fillValidations();
                     form.addFormElement(formElement);
                 }
             }
@@ -168,21 +159,5 @@ public class DynamicFormHandler {
             System.out.println(entry.getKey() + ") " + entry.getValue().getSimpleName());
         }
         System.out.println("Option: ");
-    }
-
-    private void addRangeValidations(Text textField) {
-        if (InputReader.wantsToAddValueFor("Min validation"))
-            textField.setMin(InputReader.readIntFor("Min value"));
-        if (InputReader.wantsToAddValueFor("Max validation"))
-            textField.setMax(InputReader.readIntFor("Max value"));
-    }
-
-    private void addOptionsFor(OptionList optionList, String description) {
-        while (optionList.getOptions().size() == 0) {
-            optionList.setOptions(InputReader.readMultipleLinesFor(description));
-            if (optionList.getOptions().size() == 0) {
-                System.out.println(description + " must have at least one option");
-            }
-        }
     }
 }
