@@ -1,6 +1,6 @@
-package com.company.dynamic.form;
+package com.company.dynamicform;
 
-import com.company.dynamic.form.elements.*;
+import com.company.dynamicform.elements.*;
 import com.company.utils.*;
 
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class DynamicFormHandler {
     private final DynamicFormService service;
+    private final IReader reader;
 
     static {
         FormElementFactory.register("1", Text.class);
@@ -19,8 +20,9 @@ public class DynamicFormHandler {
         FormElementFactory.register("7", Dropdown.class);
     }
 
-    public DynamicFormHandler(DynamicFormService service) {
+    public DynamicFormHandler(DynamicFormService service, IReader reader) {
         this.service = service;
+        this.reader = reader;
     }
 
     public void start() {
@@ -28,7 +30,7 @@ public class DynamicFormHandler {
             System.out.print("Choose an option\n" +
                     "1) Create new form template    2) Fill form from Template\n" +
                     "3) Print filled form           Exit\nOption: ");
-            String option = InputReader.readLine().toLowerCase();
+            String option = reader.readLine().toLowerCase();
             switch (option) {
                 case "1":
                     DynamicForm form = createTemplateForm();
@@ -38,8 +40,10 @@ public class DynamicFormHandler {
                     DynamicForm templateForm = getForm("Template");
                     if (templateForm != null) {
                         DynamicForm filledForm = fillFormFromTemplate(templateForm);
-                        filledForm.setFilled(true);
-                        saveForm(filledForm, "Filled");
+                        if (filledForm != null) {
+                            filledForm.setFilled(true);
+                            saveForm(filledForm, "Filled");
+                        }
                     }
                     break;
                 case "3":
@@ -55,9 +59,10 @@ public class DynamicFormHandler {
     }
 
     private DynamicForm getForm(String formType) {
-        FileFormat fileFormat = (FileFormat) InputReader.readEnumFor("in what file format the form is saved", FileFormat.class);
+        FileFormat fileFormat = (FileFormat) reader
+                .readEnumFor("in what file format the form is saved", FileFormat.class);
         System.out.printf("Enter file path where the %s form is saved%nPath: ", formType);
-        String filePath = InputReader.readLine();
+        String filePath = reader.readLine();
         Response<?> response = service.getForm(fileFormat, filePath);
         if (response.isSuccessful()) {
             return (DynamicForm) response.getMsg();
@@ -68,9 +73,10 @@ public class DynamicFormHandler {
     }
 
     private void saveForm(DynamicForm form, String formType) {
-        FileFormat fileFormat = (FileFormat) InputReader.readEnumFor("in what file format the form will be saved", FileFormat.class);
+        FileFormat fileFormat = (FileFormat) reader
+                .readEnumFor("in what file format the form will be saved", FileFormat.class);
         System.out.printf("Enter file path where the %s form will be saved%nPath: ", formType);
-        String filePath = InputReader.readLine();
+        String filePath = reader.readLine();
         Response<?> response = service.saveForm(fileFormat, filePath, form);
         if (response.isSuccessful()) {
             System.out.printf("%s form was stored successfully in file \"%s\"\n", formType, filePath);
@@ -95,26 +101,28 @@ public class DynamicFormHandler {
     }
 
     private DynamicForm fillFormFromTemplate(DynamicForm templateForm) {
-        DynamicForm filledForm = new DynamicForm();
-        filledForm.setName(templateForm.getName());
-        int filledField = 0;
+        int filledFields = 0;
         List<FormElement<?>> formElements = templateForm.getFormElements();
         System.out.println("--- Filling form \"" + templateForm.getName() + "\" ---");
-        while (filledField < formElements.size()) {
-            FormElement<?> fieldTemplate = formElements.get(filledField);
+        while (filledFields < formElements.size()) {
+            FormElement<?> fieldTemplate = formElements.get(filledFields);
             System.out.print("Enter \"" + fieldTemplate.getName() + "\": ");
             System.out.print(fieldTemplate.showValueOptions());
-            String line = InputReader.readLine();
-            List<String> violations = fieldTemplate.validateValue(line);
+            String line = reader.readLine();
+            List<String> violations = fieldTemplate.validate(line);
             if (violations.size() == 0) {
-                fieldTemplate.defineValue(line);
-                filledForm.addFormElement(fieldTemplate);
-                filledField++;
+                try {
+                    fieldTemplate.defineValue(line);
+                    filledFields++;
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    return null;
+                }
             } else {
                 printViolations(violations);
             }
         }
-        return filledForm;
+        return templateForm;
     }
 
     private void printViolations(List<String> violations) {
@@ -126,7 +134,7 @@ public class DynamicFormHandler {
     private DynamicForm createTemplateForm() {
         DynamicForm form = new DynamicForm();
         System.out.print("Enter a name for the form: ");
-        form.setName(InputReader.readLine());
+        form.setName(reader.readLine());
         addFormFieldsToTemplate(form);
         return form;
     }
@@ -135,7 +143,7 @@ public class DynamicFormHandler {
         while (true) {
             System.out.printf("Adding elements to form \"%s\"%n", form.getName());
             printFormElements();
-            String option = InputReader.readLine().toLowerCase();
+            String option = reader.readLine().toLowerCase();
             if ("exit".equalsIgnoreCase(option)) {
                 break;
             } else {
@@ -144,8 +152,8 @@ public class DynamicFormHandler {
                     System.out.println("Invalid option");
                 } else {
                     String formElementType = formElement.getClass().getSimpleName();
-                    formElement.setName(InputReader.readLineFor(formElementType + " field name"));
-                    formElement.fillValidations();
+                    formElement.setName(reader.readLineFor(formElementType + " field name"));
+                    formElement.fillValidations(reader);
                     form.addFormElement(formElement);
                 }
             }

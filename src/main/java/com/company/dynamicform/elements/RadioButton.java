@@ -1,4 +1,4 @@
-package com.company.dynamic.form.elements;
+package com.company.dynamicform.elements;
 
 public class RadioButton extends OptionList {
     @Override

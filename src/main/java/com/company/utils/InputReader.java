@@ -6,20 +6,20 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class InputReader {
+public class InputReader implements IReader{
     private static final String INVALID_NUMBER_FORMAT = "Invalid number format, try again!";
     private static final Scanner scanner = new Scanner(System.in);
 
-    public static String readLine() {
+    public String readLine() {
         return scanner.nextLine();
     }
 
-    public static String readLineFor(String description) {
+    public String readLineFor(String description) {
         System.out.print("Enter " + description + ": ");
         return readLine();
     }
 
-    public static int readIntFor(String description) {
+    public int readIntFor(String description) {
         while (true) {
             try {
                 return Integer.parseInt(readLineFor(description));
@@ -29,7 +29,7 @@ public class InputReader {
         }
     }
 
-    public static double readDoubleFor(String description) {
+    public double readDoubleFor(String description) {
         while (true) {
             try {
                 return Double.parseDouble(readLineFor(description));
@@ -39,14 +39,14 @@ public class InputReader {
         }
     }
 
-    public static Enum<?> readEnumFor(String description, Class<?> enumClass) {
+    public Enum<?> readEnumFor(String description, Class<?> enumClass) {
         Enum<?>[] enumConstants = (Enum<?>[]) enumClass.getEnumConstants();
         while (true) {
             System.out.printf("Choose %s:%n", description);
             printEnumOptions(enumConstants);
             System.out.print("Option number: ");
             try {
-                return enumConstants[Integer.parseInt(InputReader.readLine()) - 1];
+                return enumConstants[Integer.parseInt(this.readLine()) - 1];
             } catch (NumberFormatException e) {
                 System.out.println(INVALID_NUMBER_FORMAT);
             } catch (Exception e) {
@@ -61,7 +61,7 @@ public class InputReader {
         }
     }
 
-    public static String readPatternFor(String description) {
+    public String readPatternFor(String description) {
         while (true) {
             System.out.print("Enter pattern for " + description + ": ");
             String pattern = readLine();
@@ -74,7 +74,7 @@ public class InputReader {
         }
     }
 
-    public static List<String> readMultipleLinesFor(String description) {
+    public List<String> readMultipleLinesFor(String description) {
         List<String> stringList = new ArrayList<>();
         System.out.println("Adding options for " + description);
         while (true) {
@@ -89,7 +89,7 @@ public class InputReader {
         return stringList;
     }
 
-    public static boolean wantsToAddValueFor(String description) {
+    public boolean wantsToAddValueFor(String description) {
         System.out.printf("Do to want to add %s? %nYes/No: ", description);
         while (true) {
             String answer = readLine();

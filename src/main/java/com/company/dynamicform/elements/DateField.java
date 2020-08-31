@@ -1,4 +1,4 @@
-package com.company.dynamic.form.elements;
+package com.company.dynamicform.elements;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -11,12 +11,12 @@ public class DateField extends FormElement<Date> {
     private static final String format = "dd/MM/yyyy";
 
     @Override
-    public void defineValue(String value) {
+    public void defineValue(String input) throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat(format);
         try {
-            setValue(dateFormat.parse(value));
+            value = dateFormat.parse(input);
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -26,11 +26,11 @@ public class DateField extends FormElement<Date> {
     }
 
     @Override
-    public List<String> validateValue(String value) {
+    public List<String> validate(String input) {
         List<String> violations = new ArrayList<>();
         DateFormat dateFormat = new SimpleDateFormat(format);
         try {
-            dateFormat.parse(value);
+            dateFormat.parse(input);
         } catch (ParseException e) {
             violations.add("Invalid date format, use the format " + format);
         }
@@ -40,6 +40,6 @@ public class DateField extends FormElement<Date> {
     @Override
     public String toString() {
         DateFormat dateFormat = new SimpleDateFormat(format);
-        return getName() + ": " + dateFormat.format(getValue());
+        return getName() + ": " + dateFormat.format(value);
     }
 }

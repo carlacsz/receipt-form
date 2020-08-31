@@ -1,4 +1,4 @@
-package com.company.dynamic.form;
+package com.company.dynamicform;
 
 import com.company.utils.*;
 

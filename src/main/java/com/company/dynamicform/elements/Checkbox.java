@@ -1,4 +1,4 @@
-package com.company.dynamic.form.elements;
+package com.company.dynamicform.elements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 public class Checkbox extends FormElement<Boolean> {
 
     @Override
-    public void defineValue(String value) {
-        setValue(Boolean.parseBoolean(value));
+    public void defineValue(String input) {
+        value = Boolean.parseBoolean(input);
     }
 
     @Override
@@ -16,9 +16,9 @@ public class Checkbox extends FormElement<Boolean> {
     }
 
     @Override
-    public List<String> validateValue(String value) {
+    public List<String> validate(String input) {
         List<String> violations = new ArrayList<>();
-        if (!"true".equalsIgnoreCase(value) && !"false".equalsIgnoreCase(value)) {
+        if (!"true".equalsIgnoreCase(input) && !"false".equalsIgnoreCase(input)) {
             violations.add("Invalid value, should be true or false");
         }
         return violations;
@@ -26,7 +26,7 @@ public class Checkbox extends FormElement<Boolean> {
 
     @Override
     public String toString() {
-        String checked = getValue() ? "Yes" : "No";
+        String checked = value ? "Yes" : "No";
         return getName() + ": " + checked;
     }
 }

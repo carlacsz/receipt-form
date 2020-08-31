@@ -1,5 +1,6 @@
-package com.company.dynamic.form.elements;
+package com.company.dynamicform.elements;
 
+import com.company.utils.IReader;
 import com.company.utils.InputReader;
 
 import java.util.ArrayList;
@@ -12,13 +13,9 @@ public abstract class OptionList extends FormElement<String> {
         return options;
     }
 
-    public void setOptions(List<String> options) {
-        this.options = options;
-    }
-
     @Override
-    public void defineValue(String value) {
-        setValue(options.get(Integer.parseInt(value) - 1));
+    public void defineValue(String input) {
+        value = options.get(Integer.parseInt(input) - 1);
     }
 
     @Override
@@ -36,10 +33,10 @@ public abstract class OptionList extends FormElement<String> {
     }
 
     @Override
-    public List<String> validateValue(String value) {
+    public List<String> validate(String input) {
         List<String> violations = new ArrayList<>();
         try {
-            options.get(Integer.parseInt(value) - 1);
+            options.get(Integer.parseInt(input) - 1);
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             violations.add("Not a valid option");
         }
@@ -47,9 +44,9 @@ public abstract class OptionList extends FormElement<String> {
     }
 
     @Override
-    public void fillValidations() {
+    public void fillValidations(IReader reader) {
         while (options.size() == 0) {
-            options = InputReader.readMultipleLinesFor(this.getClass().getSimpleName());
+            options = reader.readMultipleLinesFor(this.getClass().getSimpleName());
             if (options.size() == 0) {
                 System.out.println(this.getClass().getSimpleName() + " must have at least one option");
             }

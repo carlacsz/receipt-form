@@ -1,6 +1,6 @@
-package com.company.dynamic.form;
+package com.company.dynamicform;
 
-import com.company.dynamic.form.elements.FormElement;
+import com.company.dynamicform.elements.FormElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +32,6 @@ public class DynamicForm {
 
     public List<FormElement<?>> getFormElements() {
         return formElements;
-    }
-
-    public void setFormElements(List<FormElement<?>> formElements) {
-        this.formElements = formElements;
     }
 
 }

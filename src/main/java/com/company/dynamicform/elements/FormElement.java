@@ -1,26 +1,29 @@
-package com.company.dynamic.form.elements;
+package com.company.dynamicform.elements;
 
+import com.company.utils.IReader;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, property = "@class")
 public abstract class FormElement<T> {
-    private String name;
-    private T value;
+    protected String name;
+    protected T value;
 
-    public abstract void defineValue(String value);
+    public abstract void defineValue(String input) throws Exception;
 
     public String showValueOptions() {
         return "";
     }
 
-    public List<String> validateValue(String value) {
+    public List<String> validate(String input) {
         return new ArrayList<>();
     }
 
-    public void fillValidations(){};
+    public void fillValidations(IReader reader){}
 
     public String getName() {
         return name;
@@ -32,10 +35,6 @@ public abstract class FormElement<T> {
 
     public T getValue() {
         return value;
-    }
-
-    protected void setValue(T value) {
-        this.value = value;
     }
 
     @Override

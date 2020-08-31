@@ -1,7 +1,7 @@
 package com.company.receipt;
 
 import com.company.receipt.components.*;
-import com.company.utils.InputReader;
+import com.company.utils.IReader;
 import com.company.utils.Response;
 
 import javax.validation.ConstraintViolation;
@@ -9,22 +9,24 @@ import java.util.Set;
 
 public class ReceiptFormHandler {
     private final ReceiptService service;
+    private final IReader reader;
 
-    public ReceiptFormHandler(ReceiptService service) {
+    public ReceiptFormHandler(ReceiptService service, IReader reader) {
         this.service = service;
+        this.reader = reader;
     }
 
     public void start() {
         while (true) {
             printMainOptions();
-            String option = InputReader.readLine();
+            String option = reader.readLine();
             switch (option) {
                 case "1":
                     Response res = fillReceiptForm();
                     System.out.println(res.getMsg());
                     if (res.isSuccessful()) {
                         System.out.println("Enter yes if you want to see the Receipt Summary");
-                        if ("yes".equalsIgnoreCase(InputReader.readLine())) {
+                        if ("yes".equalsIgnoreCase(reader.readLine())) {
                             System.out.println(service.getReceipt().getMsg());
                         }
                     }
@@ -46,7 +48,7 @@ public class ReceiptFormHandler {
                 "1) Fill receipt form%n2) Print receipt form%n3) Exit%nOption number: ");
     }
 
-    public Response fillReceiptForm() {
+    public Response<?> fillReceiptForm() {
         Client client = new Client();
         CI ci = new CI();
         PaymentDetail paymentDetail = new PaymentDetail();
@@ -58,13 +60,13 @@ public class ReceiptFormHandler {
         // Client Data
         client.setFullName(readString("Full Name", "fullName", Client.class));
         ci.setNumber(readInt("CI Number", "number", CI.class));
-        ci.setExtension((CIExtension) InputReader.readEnumFor("CI extension", CIExtension.class));
+        ci.setExtension((CIExtension) reader.readEnumFor("CI extension", CIExtension.class));
         client.setEmail(readString("Email", "email", Client.class));
         client.setAddress(readString("Address", "address", Client.class));
 
         // Payment Detail
         paymentDetail.setPaymentMethod(
-                (PaymentMethod) InputReader.readEnumFor("Payment method", PaymentMethod.class));
+                (PaymentMethod) reader.readEnumFor("Payment method", PaymentMethod.class));
         if (paymentDetail.getPaymentMethod() == PaymentMethod.CREDIT_CARD) {
             paymentDetail.setCreditCardNumber(readString(
                     "Credit card number", "creditCardNumber", PaymentDetail.class));
@@ -77,7 +79,7 @@ public class ReceiptFormHandler {
                 "Product quantity", "quantity", ProductDetail.class));
         productDetail.setUnitPrice(readDouble(
                 "Product unit price", "unitPrice", ProductDetail.class));
-        productDetail.setCurrency((Currency) InputReader.readEnumFor("Currency", Currency.class));
+        productDetail.setCurrency((Currency) reader.readEnumFor("Currency", Currency.class));
 
         client.setCi(ci);
         receipt.setClient(client);
@@ -90,7 +92,7 @@ public class ReceiptFormHandler {
     private String readString(String name, String propertyName, Class<?> ownerClazz) {
         Set<? extends ConstraintViolation<?>> violations;
         while (true) {
-            String line = InputReader.readLineFor(name);
+            String line = reader.readLineFor(name);
             violations = service.validateValue(ownerClazz, propertyName, line);
             if (violations.isEmpty()) {
                 return line;
@@ -102,7 +104,7 @@ public class ReceiptFormHandler {
     private int readInt(String name, String propertyName, Class<?> ownerClazz) {
         Set<? extends ConstraintViolation<?>> violations;
         while (true) {
-            int number = InputReader.readIntFor(name);
+            int number = reader.readIntFor(name);
             violations = service.validateValue(ownerClazz, propertyName, number);
             if (violations.isEmpty()) {
                 return number;
@@ -114,7 +116,7 @@ public class ReceiptFormHandler {
     private double readDouble(String name, String propertyName, Class<?> ownerClazz) {
         Set<? extends ConstraintViolation<?>> violations;
         while (true) {
-            double number = InputReader.readDoubleFor(name);
+            double number = reader.readDoubleFor(name);
             violations = service.validateValue(ownerClazz, propertyName, number);
             if (violations.isEmpty()) {
                 return number;
