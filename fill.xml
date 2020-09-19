@@ -1,0 +1,68 @@
+<DynamicForm>
+  <name>Receipt Details</name>
+  <filled>true</filled>
+  <formElements>
+    <formElements _class=".Text">
+      <name>Full name</name>
+      <value>Carla</value>
+      <patternStr>^[a-zA-Z ]+$</patternStr>
+      <min>3</min>
+      <max>15</max>
+    </formElements>
+    <formElements _class=".TextNumber">
+      <name>CI</name>
+      <value>1212121</value>
+      <patternStr>^-?[0-9]\d*(\.\d*)?$</patternStr>
+      <min>1000000</min>
+    </formElements>
+    <formElements _class=".Dropdown">
+      <name>CI extension</name>
+      <value>CBBA</value>
+      <options>
+        <options>CBBA</options>
+        <options>LPZ</options>
+        <options>SCZ</options>
+        <options>ORU</options>
+      </options>
+    </formElements>
+    <formElements _class=".Text">
+      <name>Email</name>
+      <value>carla@gmail.com</value>
+      <min>5</min>
+      <max>15</max>
+    </formElements>
+    <formElements _class=".DateField">
+      <name>Created date</name>
+      <value>12/09/2020 00:00 AM</value>
+    </formElements>
+    <formElements _class=".Checkbox">
+      <name>Notify</name>
+      <value>true</value>
+    </formElements>
+    <formElements _class=".RadioButton">
+      <name>Payment method</name>
+      <value>Cash</value>
+      <options>
+        <options>Cash</options>
+        <options>Credit card</options>
+      </options>
+    </formElements>
+    <formElements _class=".Text">
+      <name>Product description</name>
+      <value>Mouse</value>
+      <min>3</min>
+    </formElements>
+    <formElements _class=".TextNumber">
+      <name>Unit price</name>
+      <value>1</value>
+      <patternStr>^-?[0-9]\d*(\.\d*)?$</patternStr>
+      <min>0</min>
+    </formElements>
+    <formElements _class=".TextNumber">
+      <name>Quantity</name>
+      <value>2</value>
+      <patternStr>^-?[0-9]\d*(\.\d*)?$</patternStr>
+      <min>0</min>
+    </formElements>
+  </formElements>
+</DynamicForm>

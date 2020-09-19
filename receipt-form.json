@@ -1,0 +1,65 @@
+{
+  "name" : "Receipt Details",
+  "filled" : false,
+  "formElements" : [ {
+    "@class" : ".Text",
+    "name" : "Full name",
+    "value" : null,
+    "patternStr" : "^[a-zA-Z ]+$",
+    "min" : 3,
+    "max" : 15
+  }, {
+    "@class" : ".TextNumber",
+    "name" : "CI",
+    "value" : null,
+    "patternStr" : "^-?[0-9]\\d*(\\.\\d*)?$",
+    "min" : 1000000,
+    "max" : null
+  }, {
+    "@class" : ".Dropdown",
+    "name" : "CI extension",
+    "value" : null,
+    "options" : [ "CBBA", "LPZ", "SCZ", "ORU" ]
+  }, {
+    "@class" : ".Text",
+    "name" : "Email",
+    "value" : null,
+    "patternStr" : null,
+    "min" : 5,
+    "max" : 15
+  }, {
+    "@class" : ".DateField",
+    "name" : "Created date",
+    "value" : null
+  }, {
+    "@class" : ".Checkbox",
+    "name" : "Notify",
+    "value" : null
+  }, {
+    "@class" : ".RadioButton",
+    "name" : "Payment method",
+    "value" : null,
+    "options" : [ "Cash", "Credit card" ]
+  }, {
+    "@class" : ".Text",
+    "name" : "Product description",
+    "value" : null,
+    "patternStr" : null,
+    "min" : 3,
+    "max" : null
+  }, {
+    "@class" : ".TextNumber",
+    "name" : "Unit price",
+    "value" : null,
+    "patternStr" : "^-?[0-9]\\d*(\\.\\d*)?$",
+    "min" : 0,
+    "max" : null
+  }, {
+    "@class" : ".TextNumber",
+    "name" : "Quantity",
+    "value" : null,
+    "patternStr" : "^-?[0-9]\\d*(\\.\\d*)?$",
+    "min" : 0,
+    "max" : null
+  } ]
+}
